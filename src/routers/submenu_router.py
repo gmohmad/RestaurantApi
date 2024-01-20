@@ -22,9 +22,9 @@ async def get_all_submenus(
     submenus_with_counts = []
 
     for submenu_tuple in result.all():
-        submenu = submenu_tuple[0].__dict__
+        submenu = submenu_tuple[0]
 
-        submenu["dishes_count"] = await get_counts_for_submenu(submenu["id"], session)
+        submenu.dishes_count = await get_counts_for_submenu(submenu.id, session)
 
         submenus_with_counts.append(submenu)
 

@@ -20,10 +20,10 @@ async def get_all_menus(session: AsyncSession = Depends(get_async_session)):
     menus_with_counts = []
 
     for menu_tuple in result.all():
-        menu = menu_tuple[0].__dict__
+        menu = menu_tuple[0]
 
-        menu["submenus_count"], menu["dishes_count"] = await get_counts_for_menu(
-            menu["id"], session
+        menu.submenus_count, menu.dishes_count = await get_counts_for_menu(
+            menu.id, session
         )
 
         menus_with_counts.append(menu)
