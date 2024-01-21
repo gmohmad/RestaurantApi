@@ -7,7 +7,7 @@ from typing import List
 from src.database import get_async_session
 from src.models.models import SubMenu
 from src.schemas.submenu_schemas import SubMenuInput, SubMenuOutput, SubMenuUpdate
-from src.utils import get_object_by_id, get_counts_for_submenu
+from src.utils import get_submenu_by_id, get_counts_for_submenu
 
 
 submenu_router = APIRouter(prefix="/api/v1/menus/{target_menu_id}/submenus")
@@ -33,9 +33,11 @@ async def get_all_submenus(
 
 @submenu_router.get("/{target_submenu_id}", response_model=SubMenuOutput)
 async def get_specific_submenu(
-    target_submenu_id: UUID, session: AsyncSession = Depends(get_async_session)
+    target_menu_id: UUID,
+    target_submenu_id: UUID, 
+    session: AsyncSession = Depends(get_async_session)
 ):
-    submenu = await get_object_by_id(target_submenu_id, SubMenu, session)
+    submenu = await get_submenu_by_id(target_menu_id, target_submenu_id, session)
 
     submenu.dishes_count = await get_counts_for_submenu(submenu.id, session)
     return submenu
@@ -43,11 +45,12 @@ async def get_specific_submenu(
 
 @submenu_router.patch("/{target_submenu_id}", response_model=SubMenuOutput)
 async def update_submenu(
+    target_menu_id: UUID,
     target_submenu_id: UUID,
     updated_data: SubMenuUpdate,
     session: AsyncSession = Depends(get_async_session),
 ):
-    submenu = await get_object_by_id(target_submenu_id, SubMenu, session)
+    submenu = await get_submenu_by_id(target_menu_id, target_submenu_id, session)
 
     for field, value in updated_data.model_dump().items():
         if value is not None:
@@ -85,9 +88,11 @@ async def create_submenu(
 
 @submenu_router.delete("/{target_submenu_id}")
 async def delete_submenu(
-    target_submenu_id: UUID, session: AsyncSession = Depends(get_async_session)
+    target_menu_id: UUID,
+    target_submenu_id: UUID, 
+    session: AsyncSession = Depends(get_async_session)
 ):
-    submenu = await get_object_by_id(target_submenu_id, SubMenu, session)
+    submenu = await get_submenu_by_id(target_menu_id, target_submenu_id, session)
 
     await session.delete(submenu)
     await session.commit()

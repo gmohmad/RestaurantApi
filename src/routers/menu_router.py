@@ -7,7 +7,7 @@ from typing import List
 from src.database import get_async_session
 from src.models.models import Menu
 from src.schemas.menu_schemas import MenuInput, MenuOutput, MenuUpdate
-from src.utils import get_object_by_id, get_counts_for_menu
+from src.utils import get_menu_by_id, get_counts_for_menu
 
 
 menu_router = APIRouter(prefix="/api/v1/menus")
@@ -35,7 +35,7 @@ async def get_all_menus(session: AsyncSession = Depends(get_async_session)):
 async def get_specific_menu(
     target_menu_id: UUID, session: AsyncSession = Depends(get_async_session)
 ):
-    menu = await get_object_by_id(target_menu_id, Menu, session)
+    menu = await get_menu_by_id(target_menu_id, session)
 
     menu.submenus_count, menu.dishes_count = await get_counts_for_menu(menu.id, session)
 
@@ -48,7 +48,7 @@ async def update_menu(
     updated_data: MenuUpdate,
     session: AsyncSession = Depends(get_async_session),
 ):
-    menu = await get_object_by_id(target_menu_id, Menu, session)
+    menu = await get_menu_by_id(target_menu_id, session)
 
     for field, value in updated_data.model_dump().items():
         if value is not None:
@@ -82,7 +82,7 @@ async def create_menu(
 async def delete_menu(
     target_menu_id: UUID, session: AsyncSession = Depends(get_async_session)
 ):
-    menu = await get_object_by_id(target_menu_id, Menu, session)
+    menu = await get_menu_by_id(target_menu_id, session)
 
     await session.delete(menu)
     await session.commit()
