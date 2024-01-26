@@ -7,7 +7,7 @@ from typing import List
 from src.database import get_async_session
 from src.models.models import Menu
 from src.schemas.menu_schemas import MenuInput, MenuOutput, MenuUpdate
-from src.utils import get_menu_by_id, get_counts_for_menu
+from src.utils import create_menu_helper, get_menu_by_id, get_counts_for_menu
 
 
 menu_router = APIRouter(prefix="/api/v1/menus")
@@ -66,15 +66,7 @@ async def update_menu(
 async def create_menu(
     new_menu: MenuInput, session: AsyncSession = Depends(get_async_session)
 ):
-    stmt = insert(Menu).values(**new_menu.model_dump()).returning(Menu)
-    result = await session.execute(stmt)
-
-    menu = result.fetchone()[0]
-
-    await session.commit()
-
-    menu.submenus_count, menu.dishes_count = await get_counts_for_menu(menu.id, session)
-
+    menu = await create_menu_helper(new_menu, session) 
     return menu
 
 

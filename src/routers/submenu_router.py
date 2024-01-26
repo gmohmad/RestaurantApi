@@ -7,7 +7,7 @@ from typing import List
 from src.database import get_async_session
 from src.models.models import SubMenu
 from src.schemas.submenu_schemas import SubMenuInput, SubMenuOutput, SubMenuUpdate
-from src.utils import get_submenu_by_id, get_counts_for_submenu
+from src.utils import create_submenu_helper, get_submenu_by_id, get_counts_for_submenu
 
 
 submenu_router = APIRouter(prefix="/api/v1/menus/{target_menu_id}/submenus")
@@ -70,19 +70,7 @@ async def create_submenu(
     new_submenu: SubMenuInput,
     session: AsyncSession = Depends(get_async_session),
 ):
-    stmt = (
-        insert(SubMenu)
-        .values(menu_id=target_menu_id, **new_submenu.model_dump())
-        .returning(SubMenu)
-    )
-    result = await session.execute(stmt)
-
-    submenu = result.fetchone()[0]
-
-    await session.commit()
-
-    submenu.dishes_count = await get_counts_for_submenu(submenu.id, session)
-
+    submenu = await create_submenu_helper(target_menu_id, new_submenu, session)
     return submenu
 
 

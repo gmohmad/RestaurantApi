@@ -7,7 +7,7 @@ from typing import List
 from src.database import get_async_session
 from src.models.models import Dish
 from src.schemas.dish_schemas import DishInput, DishOutput, DishUpdate
-from src.utils import get_dish_by_id, convert_price
+from src.utils import create_dish_helper, get_dish_by_id
 
 
 dish_router = APIRouter(
@@ -21,7 +21,7 @@ async def get_all_dishes(
 ):
     query = select(Dish).where(Dish.submenu_id == target_submenu_id)
     result = await session.execute(query)
-    dishes = [convert_price(dish_tuple[0]) for dish_tuple in result.all()]
+    dishes = [dish_tuple[0] for dish_tuple in result.all()]
     return dishes
 
 
@@ -34,7 +34,7 @@ async def get_specific_dish(
 ):
     dish = await get_dish_by_id(target_menu_id, target_submenu_id, target_dish_id, session)
 
-    return convert_price(dish)
+    return dish
 
 
 @dish_router.patch("/{target_dish_id}", response_model=DishOutput)
@@ -54,7 +54,7 @@ async def update_dish(
     await session.commit()
     await session.refresh(dish)
 
-    return convert_price(dish)
+    return dish
 
 
 @dish_router.post("/", status_code=status.HTTP_201_CREATED, response_model=DishOutput)
@@ -63,18 +63,8 @@ async def create_dish(
     new_dish: DishInput,
     session: AsyncSession = Depends(get_async_session),
 ):
-    stmt = (
-        insert(Dish)
-        .values(submenu_id=target_submenu_id, **new_dish.model_dump())
-        .returning(Dish)
-    )
-    result = await session.execute(stmt)
-
-    dish = result.fetchone()[0]
-
-    await session.commit()
-
-    return convert_price(dish)
+    dish = await create_dish_helper(target_submenu_id, new_dish, session)
+    return dish
 
 
 @dish_router.delete("/{target_dish_id}")
