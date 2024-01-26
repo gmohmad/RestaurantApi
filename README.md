@@ -20,7 +20,7 @@ source venv/bin/activate  # Для Windows: venv\Scripts\activate
 ```
 pip intall -r requirements.txt
 ```
-# 6. Примените миграцию
+## 6. Примените миграцию
 ```
 alembic upgrade a92e977974a8
 ```
