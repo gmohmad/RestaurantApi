@@ -2,7 +2,7 @@ import pytest
 from uuid import UUID, uuid4
 from httpx import AsyncClient
 
-from tests.conftest import prepare_database
+from tests.fixtures import prepare_database
 
 
 list_path = "api/v1/menus/{}/submenus/{}/dishes/"
