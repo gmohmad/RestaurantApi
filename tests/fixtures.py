@@ -46,12 +46,10 @@ async def get_test_menu():
 
 
 @pytest.fixture(scope="function")
-async def get_test_submenu():
+async def get_test_submenu(get_test_menu):
     """Фикстура для создания подменю"""
     async with async_session_maker() as session:
-        menu = await create_menu_helper(
-            MenuInput(title="m title", description="m description"), session
-        )
+        menu = get_test_menu
         submenu = await create_submenu_helper(
             menu.id,
             SubMenuInput(title="sm title", description="sm description"),
@@ -61,17 +59,10 @@ async def get_test_submenu():
 
 
 @pytest.fixture(scope="function")
-async def get_test_dish():
+async def get_test_dish(get_test_submenu):
     """Фикстура для создания блюда"""
     async with async_session_maker() as session:
-        menu = await create_menu_helper(
-            MenuInput(title="m title", description="m description"), session
-        )
-        submenu = await create_submenu_helper(
-            menu.id,
-            SubMenuInput(title="sm title", description="sm description"),
-            session,
-        )
+        menu, submenu = get_test_submenu
         dish = await create_dish_helper(
             submenu.id,
             DishInput(title="d title", description="d description", price=99.99),

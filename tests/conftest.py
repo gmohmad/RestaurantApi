@@ -1,8 +1,7 @@
 from typing import AsyncGenerator
 from fastapi.testclient import TestClient
 
-from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
-from sqlalchemy.orm import sessionmaker
+from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine, async_sessionmaker
 from sqlalchemy.pool import NullPool
 
 from src.main import app
@@ -22,7 +21,7 @@ DATABASE_URL_TEST = (
 )
 
 engine_test = create_async_engine(DATABASE_URL_TEST, poolclass=NullPool)
-async_session_maker = sessionmaker(
+async_session_maker = async_sessionmaker(
     engine_test, class_=AsyncSession, expire_on_commit=False
 )
 
