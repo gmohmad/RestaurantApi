@@ -4,28 +4,15 @@
 ```
 git clone https://github.com/gmohmad/Y_lab_FastAPI.git
 ```
-## 2. Подготовьте базу данных (PostgreSQL)
+## 2. Создайте файл .env в дериктории проекта и заполните его по примеру файла .env.example
+## 3. Запустите контейнер приложения
 ```
-создайте пользователя
-создайте базу данных
+docker-compose up -d --build
 ```
-## 3. Создайте файл .env в дериктории проекта и заполните его по примеру файла .env.example  
-
-## 4. Создайте виртуальное окружение в дериктории проекта и активируйте его
+## 4. Для запуска тестов
 ```
-python -m venv venv
-source venv/bin/activate  # Для Windows: venv\Scripts\activate
+docker-compose down -v
+docker-compose -f docker-compose.tests.yaml -d --build
 ```
-## 5. Установите все зависимости
-```
-pip intall -r requirements.txt
-```
-## 6. Примените миграцию
-```
-alembic upgrade a92e977974a8
-```
-## 7. Запустите сервер
-```
-uvicorn src.main:app --reload
-```
-# Готово
+### Путь к файлу с реализацией сложного orm запроса (3-ий пункт ДЗ) - ./src/utils.py 
+### Имя функции - get_counts_for_menu
