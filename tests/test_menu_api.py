@@ -1,7 +1,11 @@
 import pytest
 from uuid import UUID, uuid4
 from httpx import AsyncClient
+from fastapi import HTTPException
 
+from src.utils import get_menu_by_id, get_counts_for_menu
+from src.models.models import Menu
+from tests.conftest import async_session_maker
 from tests.fixtures import prepare_database
 
 
@@ -24,7 +28,7 @@ async def test_get_all_menus_empty(ac: AsyncClient):
 @pytest.mark.asyncio
 async def test_get_all_menus(ac: AsyncClient, get_test_menu):
     """GET - тест получения всех меню"""
-    menu = get_test_menu
+    new_menu = get_test_menu
     response = await ac.get(list_path)
 
     assert response.status_code == 200
@@ -44,21 +48,37 @@ async def test_get_all_menus(ac: AsyncClient, get_test_menu):
 @pytest.mark.asyncio
 async def test_get_specific_menu(ac: AsyncClient, get_test_menu):
     """GET - тест получения определенного меню"""
-    menu = get_test_menu
+    new_menu = get_test_menu
 
-    response = await ac.get(detail_path.format(menu.id))
+    response = await ac.get(detail_path.format(new_menu.id))
 
     assert response.status_code == 200
 
     menu = response.json()
 
-    assert menu["id"] and UUID(menu["id"], version=4)
-    assert isinstance(menu["title"], str) and menu["title"] == "m title"
-    assert (
-        isinstance(menu["description"], str) and menu["description"] == "m description"
-    )
-    assert isinstance(menu["submenus_count"], int) and menu["submenus_count"] == 0
-    assert isinstance(menu["dishes_count"], int) and menu["dishes_count"] == 0
+    assert menu["id"] == str(new_menu.id)
+    assert menu["title"] == "m title"
+    assert menu["description"] == "m description"
+    assert menu["submenus_count"] == 0
+    assert menu["dishes_count"] == 0
+
+
+@pytest.mark.asyncio
+async def test_get_specific_menu_with_childs(ac: AsyncClient, get_test_dish):
+    """GET - тест получения определенного меню с дочерними объектами"""
+    new_menu, new_submenu, new_dish = get_test_dish # *_
+
+    response = await ac.get(detail_path.format(new_menu.id))
+
+    assert response.status_code == 200
+
+    menu = response.json()
+
+    assert menu["id"] == str(new_menu.id)
+    assert menu["title"] == "m title"
+    assert menu["description"] == "m description"
+    assert menu["submenus_count"] == 1
+    assert menu["dishes_count"] == 1
 
 
 @pytest.mark.asyncio
@@ -87,12 +107,21 @@ async def test_create_menu(ac: AsyncClient):
     menu = response.json()
 
     assert menu["id"] and UUID(menu["id"], version=4)
-    assert isinstance(menu["title"], str) and menu["title"] == "m title"
-    assert (
-        isinstance(menu["description"], str) and menu["description"] == "m description"
-    )
-    assert isinstance(menu["submenus_count"], int) and menu["submenus_count"] == 0
-    assert isinstance(menu["dishes_count"], int) and menu["dishes_count"] == 0
+    assert menu["title"] == menu_data["title"]
+    assert menu["description"] == menu_data["description"]
+    assert menu["submenus_count"] == 0
+    assert menu["dishes_count"] == 0
+
+    async with async_session_maker() as session:
+        db_menu = await get_menu_by_id(menu["id"], session)
+
+        assert isinstance(db_menu, Menu)
+        assert db_menu.id == UUID(menu["id"])
+        assert db_menu.title == menu_data["title"]
+        assert db_menu.description == menu_data["description"]
+
+        db_menu_counts = await get_counts_for_menu(db_menu.id, session)
+        assert db_menu_counts == (0, 0)
 
 
 @pytest.mark.asyncio
@@ -108,31 +137,40 @@ async def test_create_menu_fail(ac: AsyncClient):
 @pytest.mark.asyncio
 async def test_update_menu(ac: AsyncClient, get_test_menu):
     """PATCH - тест обновления определенного меню"""
-    menu = get_test_menu
+    new_menu = get_test_menu
 
     new_menu_data = {"title": "new title"}
-    response = await ac.patch(detail_path.format(menu.id), json=new_menu_data)
+    response = await ac.patch(detail_path.format(new_menu.id), json=new_menu_data)
 
     assert response.status_code == 200
 
     menu = response.json()
 
-    assert menu["id"] and UUID(menu["id"], version=4)
-    assert isinstance(menu["title"], str) and menu["title"] == "new title"
-    assert (
-        isinstance(menu["description"], str) and menu["description"] == "m description"
-    )
-    assert isinstance(menu["submenus_count"], int) and menu["submenus_count"] == 0
-    assert isinstance(menu["dishes_count"], int) and menu["dishes_count"] == 0
+    assert menu["id"] == str(new_menu.id)
+    assert menu["title"] == new_menu_data["title"]
+    assert menu["description"] == "m description"
+    assert menu["submenus_count"] == 0
+    assert menu["dishes_count"] == 0
+
+    async with async_session_maker() as session:
+        db_menu = await get_menu_by_id(menu["id"], session)
+
+        assert isinstance(db_menu, Menu)
+        assert db_menu.id == UUID(menu["id"])
+        assert db_menu.title == new_menu_data["title"]
+        assert db_menu.description == "m description"
+
+        db_menu_counts = await get_counts_for_menu(db_menu.id, session)
+        assert db_menu_counts == (0, 0)
 
 
 @pytest.mark.asyncio
 async def test_update_menu_fail(ac: AsyncClient, get_test_menu):
     """PATCH - тест обновления определенного меню c некорректными данными"""
-    menu = get_test_menu
+    new_menu = get_test_menu
 
     invalid_data = {"description": 12}
-    response = await ac.patch(detail_path.format(menu.id), json=invalid_data)
+    response = await ac.patch(detail_path.format(new_menu.id), json=invalid_data)
 
     assert response.status_code == 422
 
@@ -140,13 +178,17 @@ async def test_update_menu_fail(ac: AsyncClient, get_test_menu):
 @pytest.mark.asyncio
 async def test_delete_menu(ac: AsyncClient, get_test_menu):
     """DELETE - тест удаления определенного меню"""
-    menu = get_test_menu
+    new_menu = get_test_menu
 
-    response = await ac.delete(detail_path.format(menu.id))
+    response = await ac.delete(detail_path.format(new_menu.id))
     assert response.status_code == 200
 
-    get_resp = await ac.get(detail_path.format(menu.id))
-    assert get_resp.status_code == 404
+    with pytest.raises(HTTPException) as exc_info:
+        async with async_session_maker() as session:
+            await get_menu_by_id(new_menu.id, session)
+        
+        assert exc_info.value.status_code == 404
+        assert exc_info.value.detail == "menu not found"
 
 
 @pytest.mark.asyncio
