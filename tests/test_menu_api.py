@@ -199,7 +199,8 @@ async def test_delete_menu_fail(ac: AsyncClient):
     response = await ac.delete(detail_path.format(invalid_id))
     assert response.status_code == 422
 
-    fake_id = uuid4() # the probability of this uuid matching the ids 
-                      # of the other two menus is negligible, and therefore insignificant
+    fake_id = uuid4() # the probability of this uuid matching the ids of the other 
+                      # menus created duting the runtime of this module is negligible, 
+                      # and therefore insignificant
     get_resp = await ac.delete(detail_path.format(fake_id))
     assert get_resp.status_code == 404
