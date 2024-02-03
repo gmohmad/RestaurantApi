@@ -141,7 +141,7 @@ class CacheRepo:
         """Удаление кэша для всех эндпойнтов связанных с определенным блюда"""
         await self.redis.delete(DISH_KEY.format(menu_id, submenu_id))
         await self.delete_all_submenu_cache(menu_id)
-        await self.delete_submenu_cache(menu_id)
+        await self.delete_submenu_cache(menu_id, submenu_id)
 
     async def delete_dish_cache(
         self, menu_id: UUID, submenu_id: UUID, dish_id: UUID

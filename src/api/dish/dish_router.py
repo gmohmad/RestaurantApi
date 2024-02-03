@@ -12,9 +12,11 @@ dish_router = APIRouter(
 
 
 @dish_router.get("/", response_model=List[DishOutput])
-async def get_all_dishes(target_submenu_id: UUID, repo: DishServiceRepo = Depends()):
+async def get_all_dishes(
+    target_menu_id: UUID, target_submenu_id: UUID, repo: DishServiceRepo = Depends()
+):
     """Получение всех блюд"""
-    return await repo.get_all_dishes(target_submenu_id)
+    return await repo.get_all_dishes(target_menu_id, target_submenu_id)
 
 
 @dish_router.get("/{target_dish_id}", response_model=DishOutput)
@@ -46,10 +48,13 @@ async def update_dish(
 
 @dish_router.post("/", status_code=status.HTTP_201_CREATED, response_model=DishOutput)
 async def create_dish(
-    target_submenu_id: UUID, data: DishInput, repo: DishServiceRepo = Depends()
+    target_menu_id: UUID,
+    target_submenu_id: UUID,
+    data: DishInput,
+    repo: DishServiceRepo = Depends(),
 ):
     """Добавление нового блюда"""
-    return await repo.create_dish(target_submenu_id, data)
+    return await repo.create_dish(target_menu_id, target_submenu_id, data)
 
 
 @dish_router.delete("/{target_dish_id}")

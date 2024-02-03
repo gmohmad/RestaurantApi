@@ -3,7 +3,7 @@ from uuid import UUID, uuid4
 from httpx import AsyncClient
 from fastapi import HTTPException
 
-from src.utils import get_menu_by_id, get_counts_for_menu
+from src.utils import get_menu_by_id
 from src.models.models import Menu
 from tests.conftest import async_session_maker
 from tests.fixtures import prepare_database
@@ -119,9 +119,8 @@ async def test_create_menu(ac: AsyncClient):
         assert db_menu.id == UUID(menu["id"])
         assert db_menu.title == menu_data["title"]
         assert db_menu.description == menu_data["description"]
-
-        db_menu_counts = await get_counts_for_menu(db_menu.id, session)
-        assert db_menu_counts == (0, 0)
+        assert db_menu.submenus_count == 0
+        assert db_menu.dishes_count == 0
 
 
 @pytest.mark.asyncio
@@ -159,9 +158,8 @@ async def test_update_menu(ac: AsyncClient, get_test_menu):
         assert db_menu.id == UUID(menu["id"])
         assert db_menu.title == new_menu_data["title"]
         assert db_menu.description == "m description"
-
-        db_menu_counts = await get_counts_for_menu(db_menu.id, session)
-        assert db_menu_counts == (0, 0)
+        assert db_menu.submenus_count == 0
+        assert db_menu.dishes_count == 0
 
 
 @pytest.mark.asyncio

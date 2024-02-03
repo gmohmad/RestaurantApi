@@ -1,7 +1,7 @@
 from fastapi import Depends, HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession
 from uuid import UUID
-from sqlalchemy import  insert, select, func, and_
+from sqlalchemy import insert, select, func, and_
 
 from src.database import get_async_session
 from src.models.models import Base
@@ -11,44 +11,42 @@ from src.schemas.dish_schemas import DishInput
 from src.models.models import Menu, SubMenu, Dish
 
 
-async def create_menu_helper(data: MenuInput, session: AsyncSession = Depends(get_async_session)):
-    stmt = insert(Menu).values(**data.model_dump()).returning(Menu)
-    result = await session.execute(stmt)
-    menu = result.fetchone()[0]
+async def create_menu_helper(
+    data: MenuInput, session: AsyncSession = Depends(get_async_session)
+):
+    menu = Menu(**data.model_dump())
 
+    session.add(menu)
     await session.commit()
-
-    menu.submenus_count, menu.dishes_count = await get_counts_for_menu(menu.id, session)
+    await session.refresh(menu)
 
     return menu
 
 
 async def create_submenu_helper(
-    menu_id: UUID, data: SubMenuInput, session: AsyncSession = Depends(get_async_session)
+    menu_id: UUID,
+    data: SubMenuInput,
+    session: AsyncSession = Depends(get_async_session),
 ):
-    stmt = (
-        insert(SubMenu).values(menu_id=menu_id, **data.model_dump()).returning(SubMenu)
-    )
-    result = await session.execute(stmt)
-    submenu = result.fetchone()[0]
+    submenu = SubMenu(menu_id=menu_id, **data.model_dump())
 
+    session.add(submenu)
     await session.commit()
-
-    submenu.dishes_count = await get_counts_for_submenu(submenu.id, session)
+    await session.refresh(submenu)
 
     return submenu
 
 
 async def create_dish_helper(
-    submenu_id: UUID, data: DishInput, session: AsyncSession = Depends(get_async_session)
+    submenu_id: UUID,
+    data: DishInput,
+    session: AsyncSession = Depends(get_async_session),
 ):
-    stmt = (
-        insert(Dish).values(submenu_id=submenu_id, **data.model_dump()).returning(Dish)
-    )
-    result = await session.execute(stmt)
-    dish = result.fetchone()[0]
+    dish = Dish(submenu_id=submenu_id, **data.model_dump())
 
+    session.add(dish)
     await session.commit()
+    await session.refresh(dish)
 
     return dish
 
@@ -115,8 +113,7 @@ async def get_counts_for_menu(
     # Реализация вывода количества подменю и блюд для Меню через один (сложный) ORM запрос
     result = await session.execute(
         select(
-            func.count(func.distinct(SubMenu.id)),
-            func.count(func.distinct(Dish.id))
+            func.count(func.distinct(SubMenu.id)), func.count(func.distinct(Dish.id))
         )
         .select_from(Menu)
         .outerjoin(SubMenu)

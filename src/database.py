@@ -12,6 +12,7 @@ async_session_maker = async_sessionmaker(
     engine, class_=AsyncSession, expire_on_commit=False
 )
 
+
 async def get_async_session() -> AsyncGenerator[AsyncSession, None]:
     async with async_session_maker() as session:
         yield session
@@ -19,5 +20,7 @@ async def get_async_session() -> AsyncGenerator[AsyncSession, None]:
 
 pool = ConnectionPool.from_url(REDIS_URL)
 
+
 def get_redis():
+    """Соединение с redis"""
     return Redis(connection_pool=pool)

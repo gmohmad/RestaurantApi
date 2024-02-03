@@ -4,13 +4,13 @@ from httpx import AsyncClient
 from fastapi import HTTPException
 
 from src.models.models import SubMenu
-from src.utils import get_counts_for_submenu, get_submenu_by_id
+from src.utils import get_submenu_by_id
 from tests.fixtures import prepare_database
 from tests.conftest import async_session_maker
 
+
 list_path = "api/v1/menus/{}/submenus/"
 detail_path = "api/v1/menus/{}/submenus/{}"
-
 
 @pytest.mark.asyncio
 async def test_get_all_submenus_empty(ac: AsyncClient, get_test_menu):
@@ -118,9 +118,7 @@ async def test_create_submenu(ac: AsyncClient, get_test_menu):
         assert db_submenu.id == UUID(submenu["id"])
         assert db_submenu.title == submenu_data["title"]
         assert db_submenu.description == submenu_data["description"]
-
-        db_submenu_dishes = await get_counts_for_submenu(db_submenu.id, session)
-        assert db_submenu_dishes == 0
+        assert db_submenu.dishes_count == 0
 
 
 @pytest.mark.asyncio
@@ -160,9 +158,7 @@ async def test_update_submenu(ac: AsyncClient, get_test_submenu):
         assert db_submenu.id == UUID(submenu["id"])
         assert db_submenu.title == new_submenu_data["title"]
         assert db_submenu.description == "sm description"
-
-        db_submenu_dishes = await get_counts_for_submenu(db_submenu.id, session)
-        assert db_submenu_dishes == 0
+        assert db_submenu.dishes_count == 0
 
 
 @pytest.mark.asyncio
