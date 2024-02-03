@@ -1,7 +1,7 @@
 from fastapi import FastAPI
-from src.routers.menu_router import menu_router
-from src.routers.submenu_router import submenu_router
-from src.routers.dish_router import dish_router
+from src.api.menu.menu_router import menu_router
+from src.api.submenu.submenu_router import submenu_router
+from src.api.dish.dish_router import dish_router
 
 
 app = FastAPI(title="Y_lab_FastAPI")

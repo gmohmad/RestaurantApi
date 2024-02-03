@@ -1,5 +1,5 @@
-from sqlalchemy import MetaData, Column, String, Text, ForeignKey, Numeric
-from sqlalchemy.orm import declarative_base
+from sqlalchemy import MetaData, Column, String, Text, ForeignKey, Numeric, func, select
+from sqlalchemy.orm import declarative_base, column_property
 import uuid
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import relationship
@@ -9,8 +9,10 @@ metadata = MetaData()
 Base = declarative_base(metadata=metadata)
 
 
-class Menu(Base):
-    __tablename__ = "menus"
+class Dish(Base):
+    """Модель блюда"""
+
+    __tablename__ = "dishes"
 
     id = Column(
         UUID(as_uuid=True),
@@ -21,13 +23,15 @@ class Menu(Base):
     )
     title = Column(String, nullable=False, index=True)
     description = Column(Text, nullable=False)
+    price = Column(Numeric(precision=8, scale=2), nullable=False)
 
-    submenus = relationship(
-        "SubMenu", back_populates="menu", cascade="all, delete-orphan"
-    )
+    submenu_id = Column(UUID(as_uuid=True), ForeignKey("submenus.id"))
+    submenu = relationship("SubMenu", back_populates="dishes")
 
 
 class SubMenu(Base):
+    """Модель подменю"""
+
     __tablename__ = "submenus"
 
     id = Column(
@@ -45,10 +49,18 @@ class SubMenu(Base):
     dishes = relationship(
         "Dish", back_populates="submenu", cascade="all, delete-orphan"
     )
+    dishes_count = column_property(
+        select(func.count(Dish.id))
+        .where(Dish.submenu_id == id)
+        .correlate_except(Dish)
+        .as_scalar()
+    )
 
 
-class Dish(Base):
-    __tablename__ = "dishes"
+class Menu(Base):
+    """Модель меню"""
+
+    __tablename__ = "menus"
 
     id = Column(
         UUID(as_uuid=True),
@@ -59,7 +71,22 @@ class Dish(Base):
     )
     title = Column(String, nullable=False, index=True)
     description = Column(Text, nullable=False)
-    price = Column(Numeric(precision=8, scale=2), nullable=False)
 
-    submenu_id = Column(UUID(as_uuid=True), ForeignKey("submenus.id"))
-    submenu = relationship("SubMenu", back_populates="dishes")
+    submenus = relationship(
+        "SubMenu", back_populates="menu", cascade="all, delete-orphan"
+    )
+    submenus_count = column_property(
+        select(func.count(SubMenu.id))
+        .where(SubMenu.menu_id == id)
+        .correlate_except(SubMenu)
+        .as_scalar()
+    )
+    dishes_count = column_property(
+        select(func.count(Dish.id))
+        .where(
+            (Dish.submenu_id.in_(select(SubMenu.id).where(SubMenu.menu_id == id)))
+            & (SubMenu.menu_id == id)
+        )
+        .correlate_except(Dish, SubMenu)
+        .as_scalar()
+    )

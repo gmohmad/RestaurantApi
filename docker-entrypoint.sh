@@ -3,7 +3,7 @@ set -e
 
 case "$1" in
 web)
-  alembic upgrade a92e977974a8
+  alembic upgrade head
   uvicorn src.main:app --host 0.0.0.0
   ;;
 test)

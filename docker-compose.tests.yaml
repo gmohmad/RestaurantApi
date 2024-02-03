@@ -14,6 +14,8 @@ services:
     depends_on:
       db:
         condition: service_healthy
+      redis:
+        condition: service_healthy
     env_file:
       - .env
 
@@ -27,4 +29,18 @@ services:
       test: ["CMD-SHELL", "pg_isready", "-U", "${POSTGRES_USER}", "-d", "${POSTGRES_DB}"]
       interval: 10s
       timeout: 30s
+      retries: 5
+
+  redis:
+    image: redis:latest
+    expose:
+      - 6379
+    ports:
+      - "6379:6379"
+    env_file:
+      - .env
+    healthcheck:
+      test: ["CMD-SHELL", "redis-cli ping | grep PONG"]
+      interval: 1s
+      timeout: 3s
       retries: 5
