@@ -21,6 +21,6 @@ async def get_async_session() -> AsyncGenerator[AsyncSession, None]:
 pool = ConnectionPool.from_url(REDIS_URL)
 
 
-def get_redis():
+def get_redis() -> Redis:
     """Соединение с redis"""
     return Redis(connection_pool=pool)

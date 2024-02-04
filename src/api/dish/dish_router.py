@@ -14,7 +14,7 @@ dish_router = APIRouter(
 @dish_router.get("/", response_model=List[DishOutput])
 async def get_all_dishes(
     target_menu_id: UUID, target_submenu_id: UUID, repo: DishServiceRepo = Depends()
-):
+) -> List[DishOutput]:
     """Получение всех блюд"""
     return await repo.get_all_dishes(target_menu_id, target_submenu_id)
 
@@ -25,7 +25,7 @@ async def get_specific_dish(
     target_submenu_id: UUID,
     target_dish_id: UUID,
     repo: DishServiceRepo = Depends(),
-):
+) -> DishOutput:
     """Получение определенного блюда"""
     return await repo.get_specific_dish(
         target_menu_id, target_submenu_id, target_dish_id
@@ -39,7 +39,7 @@ async def update_dish(
     target_dish_id: UUID,
     data: DishUpdate,
     repo: DishServiceRepo = Depends(),
-):
+) -> DishOutput:
     """Изменение блюда"""
     return await repo.update_dish(
         target_menu_id, target_submenu_id, target_dish_id, data
@@ -52,7 +52,7 @@ async def create_dish(
     target_submenu_id: UUID,
     data: DishInput,
     repo: DishServiceRepo = Depends(),
-):
+) -> DishOutput:
     """Добавление нового блюда"""
     return await repo.create_dish(target_menu_id, target_submenu_id, data)
 
@@ -63,6 +63,6 @@ async def delete_dish(
     target_submenu_id: UUID,
     target_dish_id: UUID,
     repo: DishServiceRepo = Depends(),
-):
+) -> None:
     """Удаление блюда"""
     return await repo.delete_dish(target_menu_id, target_submenu_id, target_dish_id)

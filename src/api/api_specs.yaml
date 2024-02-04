@@ -1,0 +1,823 @@
+openapi: 3.1.0
+info:
+  title: Restaurant API
+  version: 1.0.0
+  description: API for managing menus in a restaurant.
+
+tags:
+  - name: Menus
+    description: Operations related to menus
+  - name: Submenus
+    description: Operations related to submenus
+  - name: Dishes
+    description: Operations relates to dishes
+
+
+paths:
+  /api/v1/menus:
+    get:
+      tags:
+        - Menus
+      summary: Get All Menus
+      description: Retrieve a list of all menus.
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              example:
+                - id: 6f79016a-ff96-4ba9-9023-3c07d1e8d9e0
+                  title: Breakfast
+                  description: Morning menu
+                  submenus_count: 1
+                  dishes_count: 5
+                - id: 2e4bfe44-791d-4ba7-8c8e-15d5fe9efb40
+                  title: Lunch
+                  description: Afternoon menu
+                  submenus_count: 1
+                  dishes_count: 7
+    post:
+      tags:
+        - Menus
+      summary: Create Menu
+      description: Create a new menu.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MenuInput'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              example:
+                id: 6f79016a-ff96-4ba9-9023-3c07d1e8d9e0
+                title: New Menu
+                description: New Menu Description
+                submenus_count: 1
+                dishes_count: 5
+        '422':
+          description: Bad Request, invalid data
+          content:
+            application/json:
+              example: 
+                error: Validation Error
+                details: Invalid input               
+
+  /api/v1/menus/{target_menu_id}:
+    get:
+      tags:
+        - Menus
+      summary: Get Specific Menu
+      description: Retrieve details of a specific menu.
+      parameters:
+        - name: target_menu_id
+          in: path
+          description: UUID of the target menu, should be a valid uuid4
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              example: 
+                id: 6f79016a-ff96-4ba9-9023-3c07d1e8d9e0
+                title: Breakfast
+                description: Morning menu
+                submenus_count: 1
+                dishes_count: 5
+        '422':
+          description: Bad Request, invalid id
+          content:
+            application/json:
+              example: 
+                error: Unprocessable Entity
+                details: Invalid input   
+        '404':
+          description: Bad Request, menu with this id does not exist
+          content:
+            application/json:
+              example: 
+                error: Doesn't Exist
+                details: menu not found                  
+
+    patch:
+      tags:
+        - Menus
+      summary: Update Menu
+      description: Update details of a specific menu.
+      parameters:
+        - name: target_menu_id
+          in: path
+          description: UUID of the target menu, should be a valid uuid4
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MenuUpdate'
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              example: 
+                id: 6f79016a-ff96-4ba9-9023-3c07d1e8d9e0
+                title: Updated Breakfast
+                description: Updated Morning menu
+                submenus_count: 1
+                dishes_count: 5
+        '422':
+          description: Bad Request, invalid id or data
+          content:
+            application/json:
+              example: 
+                error: Unprocessable Entity or Validation Error
+                details: Invalid input
+        '404':
+          description: Bad Request, menu with this id does not exist
+          content:
+            application/json:
+              example: 
+                error: Doesn't Exist
+                details: menu not found      
+                
+
+    delete:
+      tags:
+        - Menus
+      summary: Delete Menu
+      description: Delete a specific menu.
+      parameters:
+        - name: target_menu_id
+          in: path
+          description: UUID of the target menu, should be a valid uuid4
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Successful Response, menu deleted
+          content:
+            application/json:
+              example: "null"
+        '422':
+          description: Bad Request, invalid id
+          content:
+            application/json:
+              example: 
+                error: Unprocessable Entity
+                details: Invalid input
+        '404':
+          description: Bad Request, menu with this id does not exist
+          content:
+            application/json:
+              example: 
+                error: Doesn't Exist
+                details: menu not found
+
+
+  /api/v1/menus/{target_menu_id}/submenus:
+    get:
+      tags:
+        - Submenus
+      summary: Get All Submenus
+      description: Retrieve a list of all submenus.
+      parameters:
+        - name: target_menu_id
+          in: path
+          description: UUID of the target menu, should be a valid uuid4
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              example:
+                - id: 6f79016a-ff96-4ba9-9023-3c07d1e8d9e0
+                  title: Breakfast Submenu
+                  description: Morning submenu
+                  menu_id: 6f79016a-ff96-4ba9-9023-3c07d1e8d9e0
+                  dishes_count: 3
+                - id: 2e4bfe44-791d-4ba7-8c8e-15d5fe9efb40
+                  title: Lunch Submenu
+                  description: Afternoon submenu
+                  menu_id: 6f79016a-ff96-4ba9-9023-3c07d1e8d9e0
+                  dishes_count: 4
+        '422':
+          description: Bad Request, invalid menu id 
+          content:
+            application/json:
+              example: 
+                error: Unprocessable Entity
+                details: Invalid input
+        '404':
+          description: Bad Request, menu with this id does not exist
+          content:
+            application/json:
+              example: 
+                error: Doesn't Exist
+                details: menu not found 
+    post:
+      tags:
+        - Submenus
+      summary: Create Submenu
+      description: Create a new submenu.
+      parameters:
+        - name: target_menu_id
+          in: path
+          description: UUID of the target menu, should be a valid uuid4
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SubMenuInput'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              example:
+                id: 6f79016a-ff96-4ba9-9023-3c07d1e8d9e0
+                title: New Submenu
+                description: New Submenu Description
+                menu_id: 6f79016a-ff96-4ba9-9023-3c07d1e8d9e0
+                dishes_count: 2
+        '422':
+          description: Bad Request, invalid id or data
+          content:
+            application/json:
+              example: 
+                error: Unprocessable Entity or Validation Error
+                details: Invalid input
+        '404':
+          description: Bad Request, menu with this id does not exist
+          content:
+            application/json:
+              example: 
+                error: Doesn't Exist
+                details: menu not found 
+
+
+  /api/v1/menus/{target_menu_id}/submenus/{target_submenu_id}:
+    get:
+      tags:
+        - Submenus
+      summary: Get Specific Submenu
+      description: Retrieve details of a specific submenu.
+      parameters:
+        - name: target_menu_id
+          in: path
+          description: UUID of the target menu, should be a valid uuid4
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: target_submenu_id
+          in: path
+          description: UUID of the target submenu, should be a valid uuid4
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              example:
+                id: 6f79016a-ff96-4ba9-9023-3c07d1e8d9e0
+                title: Breakfast Submenu
+                description: Morning submenu
+                menu_id: 6f79016a-ff96-4ba9-9023-3c07d1e8d9e0
+                dishes_count: 3
+        '422':
+          description: Bad Request, invalid id
+          content:
+            application/json:
+              example:
+                error: Unprocessable Entity
+                details: Invalid input
+        '404':
+          description: Bad Request, submenu with this id does not exist
+          content:
+            application/json:
+              example:
+                error: Doesn't Exist
+                details: submenu not found
+
+    patch:
+      tags:
+        - Submenus
+      summary: Update Submenu
+      description: Update details of a specific submenu.
+      parameters:
+        - name: target_menu_id
+          in: path
+          description: UUID of the target menu, should be a valid uuid4
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: target_submenu_id
+          in: path
+          description: UUID of the target submenu, should be a valid uuid4
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SubMenuUpdate'
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              example:
+                id: 6f79016a-ff96-4ba9-9023-3c07d1e8d9e0
+                title: Updated Breakfast Submenu
+                description: Updated Morning submenu
+                menu_id: 6f79016a-ff96-4ba9-9023-3c07d1e8d9e0
+                dishes_count: 3
+        '422':
+          description: Bad Request, invalid id or data
+          content:
+            application/json:
+              example:
+                error: Unprocessable Entity or Validation Error
+                details: Invalid input
+        '404':
+          description: Bad Request, submenu with this id does not exist
+          content:
+            application/json:
+              example:
+                error: Doesn't Exist
+                details: submenu not found
+
+    delete:
+      tags:
+        - Submenus
+      summary: Delete Submenu
+      description: Delete a specific submenu.
+      parameters:
+        - name: target_menu_id
+          in: path
+          description: UUID of the target menu, should be a valid uuid4
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: target_submenu_id
+          in: path
+          description: UUID of the target submenu, should be a valid uuid4
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Successful Response, submenu deleted
+          content:
+            application/json:
+              example: "null"
+        '422':
+          description: Bad Request, invalid id
+          content:
+            application/json:
+              example:
+                error: Unprocessable Entity
+                details: Invalid input
+        '404':
+          description: Bad Request, submenu with this id does not exist
+          content:
+            application/json:
+              example:
+                error: Doesn't Exist
+                details: submenu not found
+
+  /api/v1/menus/{target_menu_id}/submenus/{target_submenu_id}/dishes:
+    get:
+      tags:
+        - Dishes
+      summary: Get All Dishes
+      description: Retrieve a list of all dishes.
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              example: 
+                - id: 6f79016a-ff96-4ba9-9023-3c07d1e8d9e0
+                  title: Breakfast Dish
+                  description: Morning Dihs
+                  price: 34.34
+                  submenu_id: 6f79016a-ff96-4ba9-9023-3c07d1e8d9e0
+                - id: 2e4bfe44-791d-4ba7-8c8e-15d5fe9efb40
+                  title: Lunch Submenu
+                  description: Afternoon submenu
+                  price: 3.23
+                  submenu_id: 6f79016a-ff96-4ba9-9023-3c07d1e8d9e0
+        '422':
+          description: Bad Request, invalid id
+          content:
+            application/json:
+              example: 
+                error: Unprocessable Entity
+                details: Invalid input
+        '404':
+          description: Bad Request, menu/submenu with this id does not exist
+          content:
+            application/json:
+              example: 
+                error: Doesn't Exist
+                details: menu/submenu not found 
+    post:
+      tags:
+        - Dishes
+      summary: Create Dish
+      description: Create a new dish.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DishInput'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              example:
+                - id: 6f79016a-ff96-4ba9-9023-3c07d1e8d9e0
+                  title: Breakfast Dish
+                  description: Morning Dihs
+                  price: 34.34
+                  submenu_id: 6f79016a-ff96-4ba9-9023-3c07d1e8d9e0
+        '422':
+          description: Bad Request, invalid id or data
+          content:
+            application/json:
+              example: 
+                error: Unprocessable Entity or Validation Error
+                details: Invalid input
+        '404':
+          description: Bad Request, menu/submenu with this id does not exist
+          content:
+            application/json:
+              example: 
+                error: Doesn't Exist
+                details: menu/submenu not found 
+
+  /api/v1/menus/{target_menu_id}/submenus/{target_submenu_id}/dishes/{target_dish_id}:
+    get:
+      tags:
+        - Dishes
+      summary: Get Specific Dish
+      description: Retrieve details of a specific dish.
+      parameters:
+        - name: target_menu_id
+          in: path
+          description: UUID of the target menu
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: target_submenu_id
+          in: path
+          description: UUID of the target submenu
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: target_dish_id
+          in: path
+          description: UUID of the target dish
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              example:
+                - id: 6f79016a-ff96-4ba9-9023-3c07d1e8d9e0
+                  title: Breakfast Dish
+                  description: Morning Dihs
+                  price: 34.34
+                  submenu_id: 6f79016a-ff96-4ba9-9023-3c07d1e8d9e0
+        '422':
+          description: Bad Request, invalid menu_id/submenu_id
+          content:
+            application/json:
+              example: 
+                error: Unprocessable Entity
+                details: Invalid input
+        '404':
+          description: Bad Request, menu/submenu/dish with this id does not exist
+          content:
+            application/json:
+              example: 
+                error: Doesn't Exist
+                details: menu/submenu/dish not found 
+
+    patch:
+      tags:
+        - Dishes
+      summary: Update Dish
+      description: Update details of a specific dish.
+      parameters:
+        - name: target_menu_id
+          in: path
+          description: UUID of the target menu
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: target_submenu_id
+          in: path
+          description: UUID of the target submenu
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: target_dish_id
+          in: path
+          description: UUID of the target dish
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DishUpdate'
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              example:
+                - id: 6f79016a-ff96-4ba9-9023-3c07d1e8d9e0
+                  title: Breakfast Dish
+                  description: Morning Dihs
+                  price: 34.34
+                  submenu_id: 6f79016a-ff96-4ba9-9023-3c07d1e8d9e0
+        '422':
+          description: Bad Request, invalid menu_id/submenu_id
+          content:
+            application/json:
+              example: 
+                error: Unprocessable Entity
+                details: Invalid input
+        '404':
+          description: Bad Request, menu/submenu/dish with this id does not exist
+          content:
+            application/json:
+              example: 
+                error: Doesn't Exist
+                details: menu/submenu/dish not found 
+
+    delete:
+      tags:
+        - Dishes
+      summary: Delete Dish
+      description: Delete a specific dish.
+      parameters:
+        - name: target_menu_id
+          in: path
+          description: UUID of the target menu
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: target_submenu_id
+          in: path
+          description: UUID of the target submenu
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: target_dish_id
+          in: path
+          description: UUID of the target dish
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Successful Response, dish deleted
+          content:
+            application/json:
+              example: "null"
+        '422':
+          description: Bad Request, invalid menu_id/submenu_id
+          content:
+            application/json:
+              example: 
+                error: Unprocessable Entity
+                details: Invalid input
+        '404':
+          description: Bad Request, menu/submenu/dish with this id does not exist
+          content:
+            application/json:
+              example: 
+                error: Doesn't Exist
+                details: menu/submenu/dish not found 
+
+components:
+  schemas:
+    MenuInput:
+      type: object
+      properties:
+        title:
+          type: string
+          example: Breakfast
+        description:
+          type: string
+          example: Morning menu
+      required:
+        - title
+        - description
+
+    MenuOutput:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          example: 6f79016a-ff96-4ba9-9023-3c07d1e8d9e0
+        title:
+          type: string
+          example: Breakfast
+        description:
+          type: string
+          example: Morning menu
+        submenus_count:
+          type: int
+          example: 1
+        dishes_count:
+          type: int
+          example: 5
+      required:
+        - id
+        - title
+        - description
+        - submenus_count
+        - dishes_count
+
+    MenuUpdate:
+      type: object
+      properties:
+        title:
+          type: string
+          example: Updated Breakfast
+        description:
+          type: string
+          example: Updated Morning menu
+      required:
+        - title
+        - description
+
+    SubMenuInput:
+      type: object
+      properties:
+        title:
+          type: string
+          example: Breakfast Submenu
+        description:
+          type: string
+          example: Morning submenu
+      required:
+        - title
+        - description
+
+    SubMenuOutput:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          example: 6f79016a-ff96-4ba9-9023-3c07d1e8d9e0
+        title:
+          type: string
+          example: Breakfast Submenu
+        description:
+          type: string
+          example: Morning submenu
+        dishes_count:
+          type: int
+          example: 3
+        menu_id:
+          type: string
+          format: uuid
+          example: 6f79016a-ff96-4ba9-9023-3c07d1e8d9e0
+      required:
+        - id
+        - title
+        - description
+        - dishes_count
+        - menu_id
+
+    SubMenuUpdate:
+      type: object
+      properties:
+        title:
+          type: string
+          example: Updated Breakfast Submenu
+        description:
+          type: string
+          example: Updated Morning submenu
+      required:
+        - title
+        - description
+
+    DishInput:
+      description: Input schema for creating a dish
+      type: object
+      properties:
+        name:
+          type: string
+          example: Spaghetti Bolognese
+        description:
+          type: string
+          example: Classic Italian dish
+        price:
+          type: number
+          example: 15.99
+      required:
+        - name
+        - description
+        - price
+
+    DishOutput:
+      description: Output schema for a dish
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          example: 6f79016a-ff96-4ba9-9023-3c07d1e8d9e0
+        name:
+          type: string
+          example: Spaghetti Bolognese
+        description:
+          type: string
+          example: Classic Italian dish
+        price:
+          type: number
+          example: 15.99
+        submenu_id:
+          type: string
+          format: uuid
+          example: 6f79016a-ff96-4ba9-9023-3c07d1e8d9e0
+      required:
+        - id
+        - name
+        - description
+        - price
+        - submenu_id
+
+    DishUpdate:
+      description: Update schema for a dish
+      type: object
+      properties:
+        name:
+          type: string
+          example: Updated Spaghetti Bolognese
+        description:
+          type: string
+          example: Updated Italian dish
+        price:
+          type: number
+          example: 18.99
+      required:
+        - name
+        - description
+        - price

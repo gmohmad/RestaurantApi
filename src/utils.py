@@ -2,6 +2,7 @@ from fastapi import Depends, HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession
 from uuid import UUID
 from sqlalchemy import insert, select, func, and_
+from typing import Tuple
 
 from src.database import get_async_session
 from src.models.models import Base
@@ -13,7 +14,7 @@ from src.models.models import Menu, SubMenu, Dish
 
 async def create_menu_helper(
     data: MenuInput, session: AsyncSession = Depends(get_async_session)
-):
+) -> Menu:
     menu = Menu(**data.model_dump())
 
     session.add(menu)
@@ -27,7 +28,7 @@ async def create_submenu_helper(
     menu_id: UUID,
     data: SubMenuInput,
     session: AsyncSession = Depends(get_async_session),
-):
+) -> SubMenu:
     submenu = SubMenu(menu_id=menu_id, **data.model_dump())
 
     session.add(submenu)
@@ -41,7 +42,7 @@ async def create_dish_helper(
     submenu_id: UUID,
     data: DishInput,
     session: AsyncSession = Depends(get_async_session),
-):
+) -> Dish:
     dish = Dish(submenu_id=submenu_id, **data.model_dump())
 
     session.add(dish)
@@ -53,7 +54,7 @@ async def create_dish_helper(
 
 async def get_menu_by_id(
     target_menu_id: UUID, session: AsyncSession = Depends(get_async_session)
-):
+) -> Menu:
     query = await session.execute(select(Menu).where(Menu.id == target_menu_id))
     menu = query.scalar()
 
@@ -64,7 +65,7 @@ async def get_submenu_by_id(
     target_menu_id: UUID,
     target_submenu_id: UUID,
     session: AsyncSession = Depends(get_async_session),
-):
+) -> SubMenu:
     query = await session.execute(
         select(SubMenu).where(
             and_(SubMenu.menu_id == target_menu_id, SubMenu.id == target_submenu_id)
@@ -80,7 +81,7 @@ async def get_dish_by_id(
     target_submenu_id: UUID,
     target_dish_id: UUID,
     session: AsyncSession = Depends(get_async_session),
-):
+) -> Dish:
     query = await session.execute(
         select(Dish)
         .join(SubMenu)
@@ -98,7 +99,7 @@ async def get_dish_by_id(
     return check_if_exists(dish, "dish")
 
 
-def check_if_exists(obj: Base | None, obj_name: str):
+def check_if_exists(obj: Base | None, obj_name: str) -> Base:
     if obj is None:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
@@ -109,7 +110,7 @@ def check_if_exists(obj: Base | None, obj_name: str):
 
 async def get_counts_for_menu(
     menu_id: UUID, session: AsyncSession = Depends(get_async_session)
-):
+)-> Tuple[int, int]:
     # Реализация вывода количества подменю и блюд для Меню через один (сложный) ORM запрос
     result = await session.execute(
         select(
@@ -129,7 +130,7 @@ async def get_counts_for_menu(
 
 async def get_counts_for_submenu(
     submenu_id: UUID, session: AsyncSession = Depends(get_async_session)
-):
+) -> int:
     dishes_count = await session.scalar(
         select(func.count(Dish.id)).join(SubMenu).where(Dish.submenu_id == submenu_id)
     )
