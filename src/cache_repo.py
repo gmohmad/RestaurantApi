@@ -10,7 +10,7 @@ from src.database import get_redis
 
 MENU_KEY = "menus/{}"
 SUBMENU_KEY = "menus/{}/submenus/"
-DISH_KEY = "menus/{}/submenus/{}/list_dishes/"
+DISH_KEY = "menus/{}/submenus/{}/dishes/"
 
 
 class CacheRepo:
@@ -59,7 +59,6 @@ class CacheRepo:
         """Удаление кэша для всех эндпойнтов связанных с определенным меню"""
         await self.delete_cache_by_mask(MENU_KEY.format(menu_id))
 
-
     async def get_all_submenus_cache(self, menu_id: UUID) -> List[SubMenu]:
         """Получение кэша эндпойнта get_all_submenus"""
         cached_submenus = await self.redis.get(SUBMENU_KEY.format(menu_id))
@@ -101,7 +100,6 @@ class CacheRepo:
     async def delete_submenu_tree_cache(self, menu_id: UUID, submenu_id: UUID) -> None:
         """Удаление кэша для всех эндпойнтов связанных с определенным подменю"""
         await self.delete_cache_by_mask(SUBMENU_KEY.format(menu_id) + str(submenu_id))
-
 
     async def get_all_dishes_cache(self, menu_id: UUID, submenu_id: UUID) -> List[Dish]:
         """Получение кэша эндпойнта get_all_dishes"""

@@ -4,14 +4,13 @@ from typing import List
 
 from src.api.dish.service_repo import DishServiceRepo
 from src.schemas.dish_schemas import DishInput, DishOutput, DishUpdate
+from src.config import DISH_URL, DISHES_URL
 
 
-dish_router = APIRouter(
-    prefix="/api/v1/menus/{target_menu_id}/submenus/{target_submenu_id}/dishes"
-)
+dish_router = APIRouter(prefix="/api/v1")
 
 
-@dish_router.get("/", response_model=List[DishOutput])
+@dish_router.get(DISHES_URL, response_model=List[DishOutput], name="get_dishes")
 async def get_all_dishes(
     target_menu_id: UUID, target_submenu_id: UUID, repo: DishServiceRepo = Depends()
 ) -> List[DishOutput]:
@@ -19,7 +18,7 @@ async def get_all_dishes(
     return await repo.get_all_dishes(target_menu_id, target_submenu_id)
 
 
-@dish_router.get("/{target_dish_id}", response_model=DishOutput)
+@dish_router.get(DISH_URL, response_model=DishOutput, name="get_dish")
 async def get_specific_dish(
     target_menu_id: UUID,
     target_submenu_id: UUID,
@@ -32,7 +31,7 @@ async def get_specific_dish(
     )
 
 
-@dish_router.patch("/{target_dish_id}", response_model=DishOutput)
+@dish_router.patch(DISH_URL, response_model=DishOutput, name="update_dish")
 async def update_dish(
     target_menu_id: UUID,
     target_submenu_id: UUID,
@@ -46,7 +45,12 @@ async def update_dish(
     )
 
 
-@dish_router.post("/", status_code=status.HTTP_201_CREATED, response_model=DishOutput)
+@dish_router.post(
+    DISHES_URL,
+    status_code=status.HTTP_201_CREATED,
+    response_model=DishOutput,
+    name="create_dish",
+)
 async def create_dish(
     target_menu_id: UUID,
     target_submenu_id: UUID,
@@ -57,7 +61,7 @@ async def create_dish(
     return await repo.create_dish(target_menu_id, target_submenu_id, data)
 
 
-@dish_router.delete("/{target_dish_id}")
+@dish_router.delete(DISH_URL, name="delete_dish")
 async def delete_dish(
     target_menu_id: UUID,
     target_submenu_id: UUID,

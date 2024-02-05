@@ -1,55 +1,12 @@
 from fastapi import Depends, HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession
 from uuid import UUID
-from sqlalchemy import insert, select, func, and_
-from typing import Tuple
+from sqlalchemy import select, and_
 
 from src.database import get_async_session
 from src.models.models import Base
-from src.schemas.menu_schemas import MenuInput
-from src.schemas.submenu_schemas import SubMenuInput
-from src.schemas.dish_schemas import DishInput
+
 from src.models.models import Menu, SubMenu, Dish
-
-
-async def create_menu_helper(
-    data: MenuInput, session: AsyncSession = Depends(get_async_session)
-) -> Menu:
-    menu = Menu(**data.model_dump())
-
-    session.add(menu)
-    await session.commit()
-    await session.refresh(menu)
-
-    return menu
-
-
-async def create_submenu_helper(
-    menu_id: UUID,
-    data: SubMenuInput,
-    session: AsyncSession = Depends(get_async_session),
-) -> SubMenu:
-    submenu = SubMenu(menu_id=menu_id, **data.model_dump())
-
-    session.add(submenu)
-    await session.commit()
-    await session.refresh(submenu)
-
-    return submenu
-
-
-async def create_dish_helper(
-    submenu_id: UUID,
-    data: DishInput,
-    session: AsyncSession = Depends(get_async_session),
-) -> Dish:
-    dish = Dish(submenu_id=submenu_id, **data.model_dump())
-
-    session.add(dish)
-    await session.commit()
-    await session.refresh(dish)
-
-    return dish
 
 
 async def get_menu_by_id(
@@ -106,32 +63,3 @@ def check_if_exists(obj: Base | None, obj_name: str) -> Base:
             detail=f"{obj_name} not found",
         )
     return obj
-
-
-async def get_counts_for_menu(
-    menu_id: UUID, session: AsyncSession = Depends(get_async_session)
-)-> Tuple[int, int]:
-    # Реализация вывода количества подменю и блюд для Меню через один (сложный) ORM запрос
-    result = await session.execute(
-        select(
-            func.count(func.distinct(SubMenu.id)), func.count(func.distinct(Dish.id))
-        )
-        .select_from(Menu)
-        .outerjoin(SubMenu)
-        .outerjoin(Dish)
-        .group_by(Menu.id)
-        .where(Menu.id == menu_id)
-    )
-
-    submenu_count, dishes_count = result.all()[0]
-
-    return submenu_count, dishes_count
-
-
-async def get_counts_for_submenu(
-    submenu_id: UUID, session: AsyncSession = Depends(get_async_session)
-) -> int:
-    dishes_count = await session.scalar(
-        select(func.count(Dish.id)).join(SubMenu).where(Dish.submenu_id == submenu_id)
-    )
-    return dishes_count

@@ -53,7 +53,7 @@ class SubMenu(Base):
         select(func.count(Dish.id))
         .where(Dish.submenu_id == id)
         .correlate_except(Dish)
-        .as_scalar()
+        .scalar_subquery()
     )
 
 
@@ -79,14 +79,13 @@ class Menu(Base):
         select(func.count(SubMenu.id))
         .where(SubMenu.menu_id == id)
         .correlate_except(SubMenu)
-        .as_scalar()
+        .scalar_subquery()
     )
+
     dishes_count = column_property(
         select(func.count(Dish.id))
-        .where(
-            (Dish.submenu_id.in_(select(SubMenu.id).where(SubMenu.menu_id == id)))
-            & (SubMenu.menu_id == id)
-        )
+        .join(SubMenu, Dish.submenu_id == SubMenu.id)
+        .where(SubMenu.menu_id == id)
         .correlate_except(Dish, SubMenu)
-        .as_scalar()
+        .scalar_subquery()
     )
