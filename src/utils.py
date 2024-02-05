@@ -1,26 +1,23 @@
 from fastapi import Depends, HTTPException, status
+from sqlalchemy import and_, select
 from sqlalchemy.ext.asyncio import AsyncSession
-from uuid import UUID
-from sqlalchemy import select, and_
 
 from src.database import get_async_session
-from src.models.models import Base
-
-from src.models.models import Menu, SubMenu, Dish
+from src.model_definitions.models import Base, Dish, Menu, SubMenu
 
 
 async def get_menu_by_id(
-    target_menu_id: UUID, session: AsyncSession = Depends(get_async_session)
+    target_menu_id: str, session: AsyncSession = Depends(get_async_session)
 ) -> Menu:
     query = await session.execute(select(Menu).where(Menu.id == target_menu_id))
     menu = query.scalar()
 
-    return check_if_exists(menu, "menu")
+    return check_if_exists(menu, 'menu')
 
 
 async def get_submenu_by_id(
-    target_menu_id: UUID,
-    target_submenu_id: UUID,
+    target_menu_id: str,
+    target_submenu_id: str,
     session: AsyncSession = Depends(get_async_session),
 ) -> SubMenu:
     query = await session.execute(
@@ -30,13 +27,13 @@ async def get_submenu_by_id(
     )
     submenu = query.scalar()
 
-    return check_if_exists(submenu, "submenu")
+    return check_if_exists(submenu, 'submenu')
 
 
 async def get_dish_by_id(
-    target_menu_id: UUID,
-    target_submenu_id: UUID,
-    target_dish_id: UUID,
+    target_menu_id: str,
+    target_submenu_id: str,
+    target_dish_id: str,
     session: AsyncSession = Depends(get_async_session),
 ) -> Dish:
     query = await session.execute(
@@ -53,13 +50,13 @@ async def get_dish_by_id(
     )
     dish = query.scalar()
 
-    return check_if_exists(dish, "dish")
+    return check_if_exists(dish, 'dish')
 
 
 def check_if_exists(obj: Base | None, obj_name: str) -> Base:
     if obj is None:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail=f"{obj_name} not found",
+            detail=f'{obj_name} not found',
         )
     return obj

@@ -1,12 +1,12 @@
+from uuid import UUID
+
 from fastapi import Depends
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
-from uuid import UUID
-from typing import List
 
-from src.schemas.menu_schemas import MenuInput, MenuUpdate
 from src.database import get_async_session
-from src.models.models import Menu
+from src.model_definitions.models import Menu
+from src.schemas.menu_schemas import MenuInput, MenuUpdate
 from src.utils import check_if_exists
 
 
@@ -16,7 +16,7 @@ class MenuCRUDRepo:
     def __init__(self, session: AsyncSession = Depends(get_async_session)) -> None:
         self.session = session
 
-    async def get_all_menus(self) -> List[Menu]:
+    async def get_all_menus(self) -> list[Menu]:
         """Получение всех меню"""
         query = select(Menu)
         result = await self.session.execute(query)
@@ -36,7 +36,7 @@ class MenuCRUDRepo:
         """Получение определенного меню"""
         query = await self.session.execute(select(Menu).where(Menu.id == menu_id))
         result = query.scalar()
-        return check_if_exists(result, "menu")
+        return check_if_exists(result, 'menu')
 
     async def update_menu(self, menu_id: UUID, data: MenuUpdate) -> Menu:
         """Изменение меню"""

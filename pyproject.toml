@@ -1,3 +1,6 @@
 [tool.pytest.ini_options]
 pythonpath = ["." , "src"]
 asyncio_mode = "auto"
+
+[tool.mypy]
+explicit_package_bases = true

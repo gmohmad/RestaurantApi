@@ -1,12 +1,12 @@
+from uuid import UUID
+
 from fastapi import Depends
 from sqlalchemy import and_, select
 from sqlalchemy.ext.asyncio import AsyncSession
-from uuid import UUID
-from typing import List
 
-from src.schemas.dish_schemas import DishInput, DishUpdate
 from src.database import get_async_session
-from src.models.models import Dish, SubMenu
+from src.model_definitions.models import Dish, SubMenu
+from src.schemas.dish_schemas import DishInput, DishUpdate
 from src.utils import check_if_exists
 
 
@@ -16,7 +16,7 @@ class DishCRUDRepo:
     def __init__(self, session: AsyncSession = Depends(get_async_session)) -> None:
         self.session = session
 
-    async def get_all_dishes(self, submenu_id: UUID) -> List[Dish]:
+    async def get_all_dishes(self, submenu_id: UUID) -> list[Dish]:
         """Получение всех блюд"""
         query = select(Dish).where(Dish.submenu_id == submenu_id)
         result = await self.session.execute(query)
@@ -50,7 +50,7 @@ class DishCRUDRepo:
         )
         result = query.scalar()
 
-        return check_if_exists(result, "dish")
+        return check_if_exists(result, 'dish')
 
     async def update_dish(
         self, menu_id: UUID, submenu_id: UUID, dish_id: UUID, data: DishUpdate

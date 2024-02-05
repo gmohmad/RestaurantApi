@@ -1,11 +1,11 @@
-from fastapi import Depends
-from typing import List
 from uuid import UUID
 
-from src.schemas.menu_schemas import MenuInput
-from src.models.models import Menu
-from src.cache_repo import CacheRepo
+from fastapi import Depends
+
 from src.api.menu.crud_repo import MenuCRUDRepo
+from src.cache_repo import CacheRepo
+from src.model_definitions.models import Menu
+from src.schemas.menu_schemas import MenuInput
 
 
 class MenuServiceRepo:
@@ -17,7 +17,7 @@ class MenuServiceRepo:
         self.crud_repo = crud_repo
         self.cache_repo = cache_repo
 
-    async def get_all_menus(self) -> List[Menu]:
+    async def get_all_menus(self) -> list[Menu]:
         """Получение всех меню"""
         cache = await self.cache_repo.get_all_menus_cache()
         if cache:

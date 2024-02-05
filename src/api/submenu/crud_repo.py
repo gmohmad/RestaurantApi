@@ -1,12 +1,12 @@
+from uuid import UUID
+
 from fastapi import Depends
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
-from uuid import UUID
-from typing import List
 
-from src.schemas.submenu_schemas import SubMenuInput, SubMenuUpdate
 from src.database import get_async_session
-from src.models.models import SubMenu
+from src.model_definitions.models import SubMenu
+from src.schemas.submenu_schemas import SubMenuInput, SubMenuUpdate
 from src.utils import check_if_exists
 
 
@@ -16,7 +16,7 @@ class SubMenuCRUDRepo:
     def __init__(self, session: AsyncSession = Depends(get_async_session)) -> None:
         self.session = session
 
-    async def get_all_submenus(self, menu_id: UUID) -> List[SubMenu]:
+    async def get_all_submenus(self, menu_id: UUID) -> list[SubMenu]:
         """Получение всех подменю"""
         query = select(SubMenu).where(SubMenu.menu_id == menu_id)
         result = await self.session.execute(query)
@@ -39,7 +39,7 @@ class SubMenuCRUDRepo:
         )
         result = query.scalar()
 
-        return check_if_exists(result, "submenu")
+        return check_if_exists(result, 'submenu')
 
     async def update_submenu(
         self, menu_id: UUID, submenu_id: UUID, data: SubMenuUpdate

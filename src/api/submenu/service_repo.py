@@ -1,11 +1,11 @@
-from fastapi import Depends
-from typing import List
 from uuid import UUID
 
-from src.models.models import SubMenu
-from src.schemas.submenu_schemas import SubMenuInput
-from src.cache_repo import CacheRepo
+from fastapi import Depends
+
 from src.api.submenu.crud_repo import SubMenuCRUDRepo
+from src.cache_repo import CacheRepo
+from src.model_definitions.models import SubMenu
+from src.schemas.submenu_schemas import SubMenuInput
 
 
 class SubMenuServiceRepo:
@@ -19,7 +19,7 @@ class SubMenuServiceRepo:
         self.crud_repo = crud_repo
         self.cache_repo = cache_repo
 
-    async def get_all_submenus(self, menu_id: UUID) -> List[SubMenu]:
+    async def get_all_submenus(self, menu_id: UUID) -> list[SubMenu]:
         """Получение всех подменю"""
         cache = await self.cache_repo.get_all_submenus_cache(menu_id)
         if cache:

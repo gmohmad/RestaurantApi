@@ -1,11 +1,11 @@
-from fastapi import Depends
-from typing import List
 from uuid import UUID
 
-from src.models.models import Dish
-from src.schemas.dish_schemas import DishInput
-from src.cache_repo import CacheRepo
+from fastapi import Depends
+
 from src.api.dish.crud_repo import DishCRUDRepo
+from src.cache_repo import CacheRepo
+from src.model_definitions.models import Dish
+from src.schemas.dish_schemas import DishInput
 
 
 class DishServiceRepo:
@@ -19,7 +19,7 @@ class DishServiceRepo:
         self.crud_repo = crud_repo
         self.cache_repo = cache_repo
 
-    async def get_all_dishes(self, menu_id: UUID, submenu_id: UUID) -> List[Dish]:
+    async def get_all_dishes(self, menu_id: UUID, submenu_id: UUID) -> list[Dish]:
         """Получение всех блюд"""
         cache = await self.cache_repo.get_all_dishes_cache(menu_id, submenu_id)
         if cache:

@@ -1,6 +1,6 @@
-from pydantic import BaseModel, field_serializer
 from uuid import UUID
-from typing import Optional
+
+from pydantic import BaseModel, field_serializer
 
 
 class DishInput(BaseModel):
@@ -16,12 +16,12 @@ class DishOutput(BaseModel):
     price: float
     submenu_id: UUID
 
-    @field_serializer("price")
+    @field_serializer('price')
     def serialize_price(self, price: float) -> str:
         return str(price)
 
 
 class DishUpdate(BaseModel):
-    title: Optional[str] = None
-    description: Optional[str] = None
-    price: Optional[float] = None
+    title: str | None = None
+    description: str | None = None
+    price: float | None = None

@@ -1,6 +1,6 @@
-from pydantic import BaseModel
 from uuid import UUID
-from typing import Optional
+
+from pydantic import BaseModel
 
 
 class SubMenuInput(BaseModel):
@@ -17,5 +17,5 @@ class SubMenuOutput(BaseModel):
 
 
 class SubMenuUpdate(BaseModel):
-    title: Optional[str] = None
-    description: Optional[str] = None
+    title: str | None = None
+    description: str | None = None

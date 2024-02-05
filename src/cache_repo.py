@@ -1,16 +1,15 @@
 import pickle
 from uuid import UUID
-from fastapi import Depends
+
 from aioredis import Redis
-from typing import List
+from fastapi import Depends
 
-from src.models.models import Menu, SubMenu, Dish
 from src.database import get_redis
+from src.model_definitions.models import Dish, Menu, SubMenu
 
-
-MENU_KEY = "menus/{}"
-SUBMENU_KEY = "menus/{}/submenus/"
-DISH_KEY = "menus/{}/submenus/{}/dishes/"
+MENU_KEY = 'menus/{}'
+SUBMENU_KEY = 'menus/{}/submenus/'
+DISH_KEY = 'menus/{}/submenus/{}/dishes/'
 
 
 class CacheRepo:
@@ -21,21 +20,21 @@ class CacheRepo:
 
     async def delete_cache_by_mask(self, pattern: str) -> None:
         """Удаление кэша по маске"""
-        for key in await self.redis.keys(pattern + "*"):
+        for key in await self.redis.keys(pattern + '*'):
             await self.redis.delete(key)
 
-    async def get_all_menus_cache(self) -> List[Menu]:
+    async def get_all_menus_cache(self) -> list[Menu] | None:
         """Получение кэша эндпойнта get_all_menus"""
         cached_menus = await self.redis.get(MENU_KEY)
         if cached_menus:
             return pickle.loads(cached_menus)
         return None
 
-    async def set_all_menus_cache(self, menus: List[Menu]) -> None:
+    async def set_all_menus_cache(self, menus: list[Menu]) -> None:
         """Добавление кэша для эндпойнта get_all_menus"""
         await self.redis.set(MENU_KEY, pickle.dumps(menus), 3600)
 
-    async def get_menu_cache(self, menu_id: UUID) -> Menu:
+    async def get_menu_cache(self, menu_id: UUID) -> Menu | None:
         """Получение кэша эндпойнта get_specific_menu"""
         cached_menu = await self.redis.get(MENU_KEY.format(menu_id))
         if cached_menu:
@@ -59,7 +58,7 @@ class CacheRepo:
         """Удаление кэша для всех эндпойнтов связанных с определенным меню"""
         await self.delete_cache_by_mask(MENU_KEY.format(menu_id))
 
-    async def get_all_submenus_cache(self, menu_id: UUID) -> List[SubMenu]:
+    async def get_all_submenus_cache(self, menu_id: UUID) -> list[SubMenu] | None:
         """Получение кэша эндпойнта get_all_submenus"""
         cached_submenus = await self.redis.get(SUBMENU_KEY.format(menu_id))
         if cached_submenus:
@@ -67,12 +66,12 @@ class CacheRepo:
         return None
 
     async def set_all_submenus_cache(
-        self, menu_id: UUID, submenus: List[SubMenu]
+        self, menu_id: UUID, submenus: list[SubMenu]
     ) -> None:
         """Добавление кэша для эндпойнта get_all_submenus"""
         await self.redis.set(SUBMENU_KEY.format(menu_id), pickle.dumps(submenus), 3600)
 
-    async def get_submenu_cache(self, menu_id: UUID, submenu_id: UUID) -> SubMenu:
+    async def get_submenu_cache(self, menu_id: UUID, submenu_id: UUID) -> SubMenu | None:
         """Получение кэша эндпойнта get_specific_submenu"""
         cached_submenu = await self.redis.get(
             SUBMENU_KEY.format(menu_id) + str(submenu_id)
@@ -101,7 +100,7 @@ class CacheRepo:
         """Удаление кэша для всех эндпойнтов связанных с определенным подменю"""
         await self.delete_cache_by_mask(SUBMENU_KEY.format(menu_id) + str(submenu_id))
 
-    async def get_all_dishes_cache(self, menu_id: UUID, submenu_id: UUID) -> List[Dish]:
+    async def get_all_dishes_cache(self, menu_id: UUID, submenu_id: UUID) -> list[Dish] | None:
         """Получение кэша эндпойнта get_all_dishes"""
         cached_dishes = await self.redis.get(DISH_KEY.format(menu_id, submenu_id))
         if cached_dishes:
@@ -109,7 +108,7 @@ class CacheRepo:
         return None
 
     async def set_all_dishes_cache(
-        self, menu_id: UUID, submenu_id: UUID, dishes: List[Dish]
+        self, menu_id: UUID, submenu_id: UUID, dishes: list[Dish]
     ) -> None:
         """Добавление кэша для эндпойнта get_all_dishes"""
         await self.redis.set(
@@ -118,7 +117,7 @@ class CacheRepo:
 
     async def get_dish_cache(
         self, menu_id: UUID, submenu_id: UUID, dish_id: UUID
-    ) -> Dish:
+    ) -> Dish | None:
         """Получение кэша эндпойнта get_specific_dish"""
         cached_dish = await self.redis.get(
             DISH_KEY.format(menu_id, submenu_id) + str(dish_id)
