@@ -16,5 +16,6 @@ pytest_plugins = ['tests.fixtures']
 
 
 async def override_session_db() -> AsyncSession:
+    """Создает экземпляр асинхронной бд сессии"""
     async with SessionMaker() as session:
         yield session

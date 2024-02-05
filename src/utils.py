@@ -9,6 +9,7 @@ from src.model_definitions.models import Base, Dish, Menu, SubMenu
 async def get_menu_by_id(
     target_menu_id: str, session: AsyncSession = Depends(get_async_session)
 ) -> Menu:
+    """Возвращает меню по id"""
     query = await session.execute(select(Menu).where(Menu.id == target_menu_id))
     menu = query.scalar()
 
@@ -20,6 +21,7 @@ async def get_submenu_by_id(
     target_submenu_id: str,
     session: AsyncSession = Depends(get_async_session),
 ) -> SubMenu:
+    """Возвращает подменю по id"""
     query = await session.execute(
         select(SubMenu).where(
             and_(SubMenu.menu_id == target_menu_id, SubMenu.id == target_submenu_id)
@@ -36,6 +38,7 @@ async def get_dish_by_id(
     target_dish_id: str,
     session: AsyncSession = Depends(get_async_session),
 ) -> Dish:
+    """Возвращает блюдо по id"""
     query = await session.execute(
         select(Dish)
         .join(SubMenu)
@@ -54,6 +57,7 @@ async def get_dish_by_id(
 
 
 def check_if_exists(obj: Base | None, obj_name: str) -> Base:
+    """Вызывает HTTPException если obj является None"""
     if obj is None:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,

@@ -4,11 +4,13 @@ from pydantic import BaseModel
 
 
 class MenuInput(BaseModel):
+    """Модель для валидации входных данных для создания меню"""
     title: str
     description: str
 
 
 class MenuOutput(BaseModel):
+    """Модель для валидации выходных данных меню"""
     id: UUID
     title: str
     description: str
@@ -17,5 +19,6 @@ class MenuOutput(BaseModel):
 
 
 class MenuUpdate(BaseModel):
+    """Модель для валидации входных данных для изменения меню"""
     title: str | None = None
     description: str | None = None
