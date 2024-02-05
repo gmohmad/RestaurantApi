@@ -35,7 +35,7 @@ paths:
                   title: Lunch
                   description: Afternoon menu
                   submenus_count: 1
-                  dishes_count: 7
+                  dishes_count: 8
     post:
       tags:
         - Menus
@@ -62,9 +62,9 @@ paths:
           description: Bad Request, invalid data
           content:
             application/json:
-              example: 
+              example:
                 error: Validation Error
-                details: Invalid input               
+                details: Invalid input
 
   /api/v1/menus/{target_menu_id}:
     get:
@@ -85,7 +85,7 @@ paths:
           description: Successful response
           content:
             application/json:
-              example: 
+              example:
                 id: 6f79016a-ff96-4ba9-9023-3c07d1e8d9e0
                 title: Breakfast
                 description: Morning menu
@@ -95,16 +95,16 @@ paths:
           description: Bad Request, invalid id
           content:
             application/json:
-              example: 
+              example:
                 error: Unprocessable Entity
-                details: Invalid input   
+                details: Invalid input
         '404':
           description: Bad Request, menu with this id does not exist
           content:
             application/json:
-              example: 
+              example:
                 error: Doesn't Exist
-                details: menu not found                  
+                details: menu not found
 
     patch:
       tags:
@@ -130,7 +130,7 @@ paths:
           description: Successful response
           content:
             application/json:
-              example: 
+              example:
                 id: 6f79016a-ff96-4ba9-9023-3c07d1e8d9e0
                 title: Updated Breakfast
                 description: Updated Morning menu
@@ -140,17 +140,17 @@ paths:
           description: Bad Request, invalid id or data
           content:
             application/json:
-              example: 
+              example:
                 error: Unprocessable Entity or Validation Error
                 details: Invalid input
         '404':
           description: Bad Request, menu with this id does not exist
           content:
             application/json:
-              example: 
+              example:
                 error: Doesn't Exist
-                details: menu not found      
-                
+                details: menu not found
+
 
     delete:
       tags:
@@ -175,14 +175,14 @@ paths:
           description: Bad Request, invalid id
           content:
             application/json:
-              example: 
+              example:
                 error: Unprocessable Entity
                 details: Invalid input
         '404':
           description: Bad Request, menu with this id does not exist
           content:
             application/json:
-              example: 
+              example:
                 error: Doesn't Exist
                 details: menu not found
 
@@ -218,19 +218,19 @@ paths:
                   menu_id: 6f79016a-ff96-4ba9-9023-3c07d1e8d9e0
                   dishes_count: 4
         '422':
-          description: Bad Request, invalid menu id 
+          description: Bad Request, invalid menu id
           content:
             application/json:
-              example: 
+              example:
                 error: Unprocessable Entity
                 details: Invalid input
         '404':
           description: Bad Request, menu with this id does not exist
           content:
             application/json:
-              example: 
+              example:
                 error: Doesn't Exist
-                details: menu not found 
+                details: menu not found
     post:
       tags:
         - Submenus
@@ -265,16 +265,16 @@ paths:
           description: Bad Request, invalid id or data
           content:
             application/json:
-              example: 
+              example:
                 error: Unprocessable Entity or Validation Error
                 details: Invalid input
         '404':
           description: Bad Request, menu with this id does not exist
           content:
             application/json:
-              example: 
+              example:
                 error: Doesn't Exist
-                details: menu not found 
+                details: menu not found
 
 
   /api/v1/menus/{target_menu_id}/submenus/{target_submenu_id}:
@@ -428,7 +428,7 @@ paths:
           description: Successful response
           content:
             application/json:
-              example: 
+              example:
                 - id: 6f79016a-ff96-4ba9-9023-3c07d1e8d9e0
                   title: Breakfast Dish
                   description: Morning Dihs
@@ -443,16 +443,16 @@ paths:
           description: Bad Request, invalid id
           content:
             application/json:
-              example: 
+              example:
                 error: Unprocessable Entity
                 details: Invalid input
         '404':
           description: Bad Request, menu/submenu with this id does not exist
           content:
             application/json:
-              example: 
+              example:
                 error: Doesn't Exist
-                details: menu/submenu not found 
+                details: menu/submenu not found
     post:
       tags:
         - Dishes
@@ -479,16 +479,16 @@ paths:
           description: Bad Request, invalid id or data
           content:
             application/json:
-              example: 
+              example:
                 error: Unprocessable Entity or Validation Error
                 details: Invalid input
         '404':
           description: Bad Request, menu/submenu with this id does not exist
           content:
             application/json:
-              example: 
+              example:
                 error: Doesn't Exist
-                details: menu/submenu not found 
+                details: menu/submenu not found
 
   /api/v1/menus/{target_menu_id}/submenus/{target_submenu_id}/dishes/{target_dish_id}:
     get:
@@ -533,16 +533,16 @@ paths:
           description: Bad Request, invalid menu_id/submenu_id
           content:
             application/json:
-              example: 
+              example:
                 error: Unprocessable Entity
                 details: Invalid input
         '404':
           description: Bad Request, menu/submenu/dish with this id does not exist
           content:
             application/json:
-              example: 
+              example:
                 error: Doesn't Exist
-                details: menu/submenu/dish not found 
+                details: menu/submenu/dish not found
 
     patch:
       tags:
@@ -592,16 +592,16 @@ paths:
           description: Bad Request, invalid menu_id/submenu_id
           content:
             application/json:
-              example: 
+              example:
                 error: Unprocessable Entity
                 details: Invalid input
         '404':
           description: Bad Request, menu/submenu/dish with this id does not exist
           content:
             application/json:
-              example: 
+              example:
                 error: Doesn't Exist
-                details: menu/submenu/dish not found 
+                details: menu/submenu/dish not found
 
     delete:
       tags:
@@ -640,16 +640,16 @@ paths:
           description: Bad Request, invalid menu_id/submenu_id
           content:
             application/json:
-              example: 
+              example:
                 error: Unprocessable Entity
                 details: Invalid input
         '404':
           description: Bad Request, menu/submenu/dish with this id does not exist
           content:
             application/json:
-              example: 
+              example:
                 error: Doesn't Exist
-                details: menu/submenu/dish not found 
+                details: menu/submenu/dish not found
 
 components:
   schemas:
