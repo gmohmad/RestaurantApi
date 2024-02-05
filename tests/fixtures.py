@@ -20,7 +20,7 @@ def event_loop(request) -> asyncio.AbstractEventLoop:
 
 @pytest.fixture(autouse=True, scope="function")
 async def prepare_database() -> None:
-    """Фикстура для подготовки и очистки тестовой базы данных"""
+    """Фикстура для подготовки тестовой базы данных"""
     async with engine_test.begin() as conn:
         await conn.run_sync(metadata.create_all)
 

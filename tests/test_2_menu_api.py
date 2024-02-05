@@ -50,7 +50,6 @@ async def test_create_menu(ac: AsyncClient, ids_storage: Dict[str, str]):
 
 async def test_create_menu_fail(ac: AsyncClient):
     """POST - тест создания меню с некорректными данными"""
-
     invalid_data = {"title": 12, "description": None}
     response = await ac.post(reverse("create_menu"), json=invalid_data)
 
@@ -75,7 +74,7 @@ async def test_get_all_menus(ac: AsyncClient):
         assert isinstance(menu["dishes_count"], int)
 
 
-async def test_get_specific_menu(ac: AsyncClient, ids_storage):
+async def test_get_specific_menu(ac: AsyncClient, ids_storage: Dict[str, str]):
     """GET - тест получения определенного меню"""
     response = await ac.get(reverse("get_menu", target_menu_id=ids_storage["menu_id"]))
     assert response.status_code == 200
@@ -91,7 +90,6 @@ async def test_get_specific_menu(ac: AsyncClient, ids_storage):
 
 async def test_get_specific_menu_fail(ac: AsyncClient):
     """GET - тест получения несуществующего/некорректного меню"""
-
     invalid_id = "gotta get that internship"
     response = await ac.get(reverse("get_menu", target_menu_id=invalid_id))
 
@@ -103,11 +101,12 @@ async def test_get_specific_menu_fail(ac: AsyncClient):
     assert response.status_code == 404
 
 
-async def test_update_menu(ac: AsyncClient, ids_storage):
+async def test_update_menu(ac: AsyncClient, ids_storage: Dict[str, str]):
     """PATCH - тест обновления определенного меню"""
     new_menu_data = {"title": "new title"}
     response = await ac.patch(
-        reverse("update_menu", target_menu_id=ids_storage["menu_id"]), json=new_menu_data
+        reverse("update_menu", target_menu_id=ids_storage["menu_id"]),
+        json=new_menu_data,
     )
     assert response.status_code == 200
 
@@ -130,7 +129,7 @@ async def test_update_menu(ac: AsyncClient, ids_storage):
         assert db_menu.dishes_count == 0
 
 
-async def test_update_menu_fail(ac: AsyncClient, ids_storage):
+async def test_update_menu_fail(ac: AsyncClient, ids_storage: Dict[str, str]):
     """PATCH - тест обновления определенного меню c некорректными данными"""
     invalid_data = {"description": 12}
     response = await ac.patch(
@@ -140,7 +139,7 @@ async def test_update_menu_fail(ac: AsyncClient, ids_storage):
     assert response.status_code == 422
 
 
-async def test_delete_menu(ac: AsyncClient, ids_storage):
+async def test_delete_menu(ac: AsyncClient, ids_storage: Dict[str, str]):
     """DELETE - тест удаления определенного меню"""
     response = await ac.delete(
         reverse("delete_menu", target_menu_id=ids_storage["menu_id"])

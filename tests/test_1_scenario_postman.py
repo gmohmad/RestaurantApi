@@ -1,5 +1,4 @@
 from typing import Dict
-import pytest
 from uuid import UUID
 from httpx import AsyncClient
 
@@ -116,7 +115,6 @@ async def test_get_specific_submenu_postman(
 
 async def test_delete_submenu_postman(ac: AsyncClient, ids_storage: Dict[str, str]):
     """DELETE - Удаляет подменю"""
-
     response = await ac.delete(
         reverse(
             "get_submenu",
@@ -134,7 +132,6 @@ async def test_delete_submenu_postman(ac: AsyncClient, ids_storage: Dict[str, st
 
 async def test_get_all_submenus_postman(ac: AsyncClient, ids_storage: Dict[str, str]):
     """GET - просматривает список подменю"""
-
     response = await ac.get(
         reverse("get_submenus", target_menu_id=ids_storage["menu_id"])
     )
@@ -147,7 +144,6 @@ async def test_get_all_submenus_postman(ac: AsyncClient, ids_storage: Dict[str, 
 
 async def test_get_all_dishes_postman(ac: AsyncClient, ids_storage: Dict[str, str]):
     """GET - просматривает список блюд"""
-
     response = await ac.get(
         reverse(
             "get_dishes",
@@ -165,7 +161,6 @@ async def test_get_specific_menu_with_no_childs_postman(
     ac: AsyncClient, ids_storage: Dict[str, str]
 ):
     """GET - просматривает определенное меню"""
-
     response = await ac.get(reverse("get_menu", target_menu_id=ids_storage["menu_id"]))
 
     assert response.status_code == 200
@@ -181,7 +176,6 @@ async def test_get_specific_menu_with_no_childs_postman(
 
 async def test_delete_menu_postman(ac: AsyncClient, ids_storage: Dict[str, str]):
     """DELETE - Удаляет меню"""
-
     response = await ac.delete(
         reverse("delete_menu", target_menu_id=ids_storage["menu_id"])
     )
@@ -191,9 +185,8 @@ async def test_delete_menu_postman(ac: AsyncClient, ids_storage: Dict[str, str])
     assert response.status_code == 404
 
 
-async def test_get_all_menus_postman(ac: AsyncClient, ids_storage: Dict[str, str]):
+async def test_get_all_menus_postman(ac: AsyncClient):
     """GET - просматривает список меню"""
-
     response = await ac.get(reverse("get_menus"))
 
     assert response.status_code == 200

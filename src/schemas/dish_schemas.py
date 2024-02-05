@@ -17,7 +17,7 @@ class DishOutput(BaseModel):
     submenu_id: UUID
 
     @field_serializer("price")
-    def serialize_price(self, price: float):
+    def serialize_price(self, price: float) -> str:
         return str(price)
 
 

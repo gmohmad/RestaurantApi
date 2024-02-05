@@ -14,12 +14,13 @@ DATABASE_URL_TEST = (
 
 engine_test = create_async_engine(DATABASE_URL_TEST)
 
-SessionMaker = async_sessionmaker(autocommit=False, autoflush=False,
-                            bind=engine_test, class_=AsyncSession
+SessionMaker = async_sessionmaker(
+    autocommit=False, autoflush=False, bind=engine_test, class_=AsyncSession
 )
 
 pytest_plugins = ["tests.fixtures"]
 
-async def override_session_db():
+
+async def override_session_db() -> AsyncSession:
     async with SessionMaker() as session:
         yield session

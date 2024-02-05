@@ -16,32 +16,18 @@ async def test_create_menu(ac: AsyncClient, ids_storage: Dict[str, str]):
     menu_data = {"title": "m title", "description": "m description"}
     response = await ac.post(reverse("create_menu"), json=menu_data)
     assert response.status_code == 201
-    menu = response.json()
-
-    assert menu["id"] and UUID(menu["id"], version=4)
-    assert menu["title"] == menu_data["title"]
-    assert menu["description"] == menu_data["description"]
-    assert menu["submenus_count"] == 0
-    assert menu["dishes_count"] == 0
-
-    ids_storage["menu_id"] = menu["id"]
+    ids_storage["menu_id"] = response.json()["id"]
 
 
 async def test_create_submenu(ac: AsyncClient, ids_storage: Dict[str, str]):
     """POST - тест создания подменю"""
     submenu_data = {"title": "sm title", "description": "sm description"}
     response = await ac.post(
-        reverse("create_submenu", target_menu_id=ids_storage["menu_id"]), json=submenu_data
+        reverse("create_submenu", target_menu_id=ids_storage["menu_id"]),
+        json=submenu_data,
     )
-    submenu = response.json()
     assert response.status_code == 201
-
-    assert submenu["id"] and UUID(submenu["id"], version=4)
-    assert submenu["title"] == submenu_data["title"]
-    assert submenu["description"] == submenu_data["description"]
-    assert submenu["dishes_count"] == 0
-
-    ids_storage["submenu_id"] = submenu["id"]
+    ids_storage["submenu_id"] = response.json()["id"]
 
 
 async def test_get_all_dishes_empty(ac: AsyncClient, ids_storage: Dict[str, str]):
@@ -220,7 +206,10 @@ async def test_delete_dish(ac: AsyncClient, ids_storage: Dict[str, str]):
     with pytest.raises(HTTPException) as exc_info:
         async with SessionMaker() as session:
             await get_dish_by_id(
-                ids_storage["menu_id"], ids_storage["submenu_id"], ids_storage["dish_id"], session
+                ids_storage["menu_id"],
+                ids_storage["submenu_id"],
+                ids_storage["dish_id"],
+                session,
             )
 
         assert exc_info.value.status_code == 404

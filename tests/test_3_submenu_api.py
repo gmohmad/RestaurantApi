@@ -16,21 +16,15 @@ async def test_create_menu(ac: AsyncClient, ids_storage: Dict[str, str]):
     menu_data = {"title": "m title", "description": "m description"}
     response = await ac.post(reverse("create_menu"), json=menu_data)
     assert response.status_code == 201
-    menu = response.json()
 
-    assert menu["id"] and UUID(menu["id"], version=4)
-    assert menu["title"] == menu_data["title"]
-    assert menu["description"] == menu_data["description"]
-    assert menu["submenus_count"] == 0
-    assert menu["dishes_count"] == 0
-
-    ids_storage["menu_id"] = menu["id"]
+    ids_storage["menu_id"] = response.json()["id"]
 
 
 async def test_get_all_submenus_empty(ac: AsyncClient, ids_storage: Dict[str, str]):
     """GET - тест получения всех подменю, когда нет ни одного подменю"""
-
-    response = await ac.get(reverse("get_submenus", target_menu_id=ids_storage["menu_id"]))
+    response = await ac.get(
+        reverse("get_submenus", target_menu_id=ids_storage["menu_id"])
+    )
 
     assert response.status_code == 200
     submenus = response.json()
@@ -41,10 +35,10 @@ async def test_get_all_submenus_empty(ac: AsyncClient, ids_storage: Dict[str, st
 
 async def test_create_submenu(ac: AsyncClient, ids_storage: Dict[str, str]):
     """POST - тест создания подменю"""
-
     submenu_data = {"title": "sm title", "description": "sm description"}
     response = await ac.post(
-        reverse("create_submenu", target_menu_id=ids_storage["menu_id"]), json=submenu_data
+        reverse("create_submenu", target_menu_id=ids_storage["menu_id"]),
+        json=submenu_data,
     )
     submenu = response.json()
 
@@ -56,7 +50,9 @@ async def test_create_submenu(ac: AsyncClient, ids_storage: Dict[str, str]):
     assert submenu["dishes_count"] == 0
 
     async with SessionMaker() as session:
-        db_submenu = await get_submenu_by_id(ids_storage["menu_id"], submenu["id"], session)
+        db_submenu = await get_submenu_by_id(
+            ids_storage["menu_id"], submenu["id"], session
+        )
 
         assert isinstance(db_submenu, SubMenu)
         assert db_submenu.id == UUID(submenu["id"])
@@ -69,8 +65,9 @@ async def test_create_submenu(ac: AsyncClient, ids_storage: Dict[str, str]):
 
 async def test_get_all_submenus(ac: AsyncClient, ids_storage: Dict[str, str]):
     """GET - тест получения всех подменю"""
-
-    response = await ac.get(reverse("get_submenus", target_menu_id=ids_storage["menu_id"]))
+    response = await ac.get(
+        reverse("get_submenus", target_menu_id=ids_storage["menu_id"])
+    )
 
     assert response.status_code == 200
     submenus = response.json()
@@ -127,7 +124,8 @@ async def test_create_submenu_fail(ac: AsyncClient, ids_storage: Dict[str, str])
     """POST - тест создания подменю c некорректными данными"""
     invalid_data = {"title": True, "description": False}
     response = await ac.post(
-        reverse("create_submenu", target_menu_id=ids_storage["menu_id"]), json=invalid_data
+        reverse("create_submenu", target_menu_id=ids_storage["menu_id"]),
+        json=invalid_data,
     )
     assert response.status_code == 422
 
@@ -153,7 +151,9 @@ async def test_update_submenu(ac: AsyncClient, ids_storage: Dict[str, str]):
     assert submenu["dishes_count"] == 0
 
     async with SessionMaker() as session:
-        db_submenu = await get_submenu_by_id(ids_storage["menu_id"], submenu["id"], session)
+        db_submenu = await get_submenu_by_id(
+            ids_storage["menu_id"], submenu["id"], session
+        )
 
         assert isinstance(db_submenu, SubMenu)
         assert db_submenu.id == UUID(submenu["id"])
@@ -170,7 +170,8 @@ async def test_update_submenu_fail(ac: AsyncClient, ids_storage: Dict[str, str])
         "target_submenu_id": ids_storage["submenu_id"],
     }
     response = await ac.patch(
-        reverse("update_submenu", **path_params), json=invalid_data,
+        reverse("update_submenu", **path_params),
+        json=invalid_data,
     )
 
     assert response.status_code == 422
@@ -187,7 +188,9 @@ async def test_delete_submenu(ac: AsyncClient, ids_storage: Dict[str, str]):
 
     with pytest.raises(HTTPException) as exc_info:
         async with SessionMaker() as session:
-            await get_submenu_by_id(ids_storage["menu_id"], ids_storage["submenu_id"], session)
+            await get_submenu_by_id(
+                ids_storage["menu_id"], ids_storage["submenu_id"], session
+            )
 
         assert exc_info.value.status_code == 404
         assert exc_info.value.detail == "submenu not found"
