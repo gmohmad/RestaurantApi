@@ -3,7 +3,7 @@ version: '3.8'
 services:
 
   web:
-    build: 
+    build:
       context: .
       dockerfile: Dockerfile
     command: ["web"]
@@ -18,7 +18,7 @@ services:
         condition: service_healthy
     env_file:
       - .env
-      
+
   db:
     image: postgres:15.1-alpine
     ports:
