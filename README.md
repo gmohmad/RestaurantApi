@@ -3,7 +3,7 @@
 ## 1. Склонируйте репозиторий
 
 ```
-git clone https://github.com/gmohmad/Y_lab_FastAPI.git
+git clone https://github.com/gmohmad/ylab_fastapi.git
 ```
 
 ## 2. Создайте файл .env в дериктории проекта и заполните его по примеру файла .env.example
