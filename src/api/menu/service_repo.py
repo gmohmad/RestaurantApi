@@ -1,6 +1,6 @@
 from uuid import UUID
 
-from fastapi import Depends
+from fastapi import BackgroundTasks, Depends
 
 from src.api.menu.crud_repo import MenuCRUDRepo
 from src.caching.cache_repo import CacheRepo
@@ -17,42 +17,44 @@ class MenuServiceRepo:
         self.crud_repo = crud_repo
         self.cache_repo = cache_repo
 
-    async def get_all_menus(self) -> list[Menu]:
+    async def get_all_menus(self, bg_tasks: BackgroundTasks) -> list[Menu]:
         """Получение всех меню"""
         cache = await self.cache_repo.get_all_menus_cache()
         if cache:
             return cache
         menus = await self.crud_repo.get_all_menus()
-        await self.cache_repo.set_all_menus_cache(menus)
+        bg_tasks.add_task(self.cache_repo.set_all_menus_cache, menus)
 
         return menus
 
-    async def get_specific_menu(self, menu_id: UUID) -> Menu:
+    async def get_specific_menu(self, bg_tasks: BackgroundTasks, menu_id: UUID) -> Menu:
         """Получение определенного меню"""
         cache = await self.cache_repo.get_menu_cache(menu_id)
         if cache:
             return cache
         menu = await self.crud_repo.get_specific_menu(menu_id)
-        await self.cache_repo.set_menu_cache(menu)
+        bg_tasks.add_task(self.cache_repo.set_menu_cache, menu)
 
         return menu
 
-    async def create_menu(self, data: MenuInput) -> Menu:
+    async def create_menu(self, bg_tasks: BackgroundTasks, data: MenuInput) -> Menu:
         """Добавление нового меню"""
         menu = await self.crud_repo.create_menu(data)
-        await self.cache_repo.delete_all_menu_cache()
+        bg_tasks.add_task(self.cache_repo.delete_all_menu_cache)
 
         return menu
 
-    async def update_menu(self, menu_id: UUID, data: MenuInput) -> Menu:
+    async def update_menu(
+        self, bg_tasks: BackgroundTasks, menu_id: UUID, data: MenuInput
+    ) -> Menu:
         """Изменение меню"""
         menu = await self.crud_repo.update_menu(menu_id, data)
-        await self.cache_repo.delete_menu_cache(menu_id)
+        bg_tasks.add_task(self.cache_repo.delete_menu_cache, menu_id)
 
         return menu
 
-    async def delete_menu(self, menu_id: UUID) -> None:
+    async def delete_menu(self, bg_tasks: BackgroundTasks, menu_id: UUID) -> None:
         """Удаление меню"""
         await self.crud_repo.delete_menu(menu_id)
-        await self.cache_repo.delete_menu_cache(menu_id)
-        await self.cache_repo.delete_menu_tree_cache(menu_id)
+        bg_tasks.add_task(self.cache_repo.delete_menu_cache, menu_id)
+        bg_tasks.add_task(self.cache_repo.delete_menu_tree_cache, menu_id)
