@@ -27,7 +27,7 @@ class SubMenuServiceRepo:
         if cache:
             return cache
         submenus = await self.crud_repo.get_all_submenus(menu_id)
-        bg_tasks.add_task(self.cache_repo.set_all_submenus_cache(menu_id, submenus))
+        bg_tasks.add_task(self.cache_repo.set_all_submenus_cache, menu_id, submenus)
 
         return submenus
 
@@ -39,7 +39,7 @@ class SubMenuServiceRepo:
         if cache:
             return cache
         submenu = await self.crud_repo.get_specific_submenu(menu_id, submenu_id)
-        bg_tasks.add_task(self.cache_repo.set_submenu_cache(menu_id, submenu))
+        bg_tasks.add_task(self.cache_repo.set_submenu_cache, menu_id, submenu)
 
         return submenu
 
@@ -48,7 +48,7 @@ class SubMenuServiceRepo:
     ) -> SubMenu:
         """Добавление нового подменю"""
         submenu = await self.crud_repo.create_submenu(menu_id, data)
-        bg_tasks.add_task(self.cache_repo.delete_all_submenu_cache(menu_id))
+        bg_tasks.add_task(self.cache_repo.delete_all_submenu_cache, menu_id)
 
         return submenu
 
@@ -61,7 +61,7 @@ class SubMenuServiceRepo:
     ) -> SubMenu:
         """Изменение подменю"""
         submenu = await self.crud_repo.update_submenu(menu_id, submenu_id, data)
-        bg_tasks.add_task(self.cache_repo.delete_submenu_cache(menu_id, submenu_id))
+        bg_tasks.add_task(self.cache_repo.delete_submenu_cache, menu_id, submenu_id)
 
         return submenu
 
@@ -71,8 +71,8 @@ class SubMenuServiceRepo:
         """Удаление подменю"""
         await self.crud_repo.delete_submenu(menu_id, submenu_id)
 
-        bg_tasks.add_task(self.cache_repo.delete_all_submenu_cache(menu_id))
-        bg_tasks.add_task(self.cache_repo.delete_submenu_cache(menu_id, submenu_id))
+        bg_tasks.add_task(self.cache_repo.delete_all_submenu_cache, menu_id)
+        bg_tasks.add_task(self.cache_repo.delete_submenu_cache, menu_id, submenu_id)
         bg_tasks.add_task(
-            self.cache_repo.delete_submenu_tree_cache(menu_id, submenu_id)
+            self.cache_repo.delete_submenu_tree_cache, menu_id, submenu_id
         )

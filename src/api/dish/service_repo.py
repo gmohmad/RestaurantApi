@@ -28,7 +28,7 @@ class DishServiceRepo:
             return cache
         dishes = await self.crud_repo.get_all_dishes(submenu_id)
         bg_tasks.add_task(
-            self.cache_repo.set_all_dishes_cache(menu_id, submenu_id, dishes)
+            self.cache_repo.set_all_dishes_cache, menu_id, submenu_id, dishes
         )
 
         return dishes
@@ -41,7 +41,7 @@ class DishServiceRepo:
         if cache:
             return cache
         dish = await self.crud_repo.get_specific_dish(menu_id, submenu_id, dish_id)
-        bg_tasks.add_task(self.cache_repo.set_dish_cache(menu_id, submenu_id, dish))
+        bg_tasks.add_task(self.cache_repo.set_dish_cache, menu_id, submenu_id, dish)
 
         return dish
 
@@ -54,7 +54,7 @@ class DishServiceRepo:
     ) -> Dish:
         """Добавление нового блюда"""
         dish = await self.crud_repo.create_dish(submenu_id, data)
-        bg_tasks.add_task(self.cache_repo.delete_all_dishes_cache(menu_id, submenu_id))
+        bg_tasks.add_task(self.cache_repo.delete_all_dishes_cache, menu_id, submenu_id)
 
         return dish
 
@@ -69,7 +69,7 @@ class DishServiceRepo:
         """Изменение блюда"""
         dish = await self.crud_repo.update_dish(menu_id, submenu_id, dish_id, data)
         bg_tasks.add_task(
-            self.cache_repo.delete_dish_cache(menu_id, submenu_id, dish_id)
+            self.cache_repo.delete_dish_cache, menu_id, submenu_id, dish_id
         )
 
         return dish
@@ -79,7 +79,7 @@ class DishServiceRepo:
     ) -> None:
         """Удаление блюда"""
         await self.crud_repo.delete_dish(menu_id, submenu_id, dish_id)
-        bg_tasks.add_task(self.cache_repo.delete_all_dishes_cache(menu_id, submenu_id))
+        bg_tasks.add_task(self.cache_repo.delete_all_dishes_cache, menu_id, submenu_id)
         bg_tasks.add_task(
-            self.cache_repo.delete_dish_cache(menu_id, submenu_id, dish_id)
+            self.cache_repo.delete_dish_cache, menu_id, submenu_id, dish_id
         )
