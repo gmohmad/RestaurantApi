@@ -14,6 +14,7 @@ REDIS_PORT = os.environ.get('REDIS_PORT')
 
 REDIS_URL = f'redis://{REDIS_HOST}:{REDIS_PORT}'
 
+MENUS_TREE = '/menus-tree/'
 MENUS_URL = '/menus/'
 MENU_URL = '/menus/{target_menu_id}'
 SUBMENUS_URL = '/menus/{target_menu_id}/submenus/'

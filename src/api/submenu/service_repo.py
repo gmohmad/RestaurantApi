@@ -49,6 +49,7 @@ class SubMenuServiceRepo:
         """Добавление нового подменю"""
         submenu = await self.crud_repo.create_submenu(menu_id, data)
         bg_tasks.add_task(self.cache_repo.delete_all_submenu_cache, menu_id)
+        bg_tasks.add_task(self.cache_repo.delete_menus_tree_cache)
 
         return submenu
 
@@ -62,6 +63,7 @@ class SubMenuServiceRepo:
         """Изменение подменю"""
         submenu = await self.crud_repo.update_submenu(menu_id, submenu_id, data)
         bg_tasks.add_task(self.cache_repo.delete_submenu_cache, menu_id, submenu_id)
+        bg_tasks.add_task(self.cache_repo.delete_menus_tree_cache)
 
         return submenu
 
@@ -76,3 +78,4 @@ class SubMenuServiceRepo:
         bg_tasks.add_task(
             self.cache_repo.delete_submenu_tree_cache, menu_id, submenu_id
         )
+        bg_tasks.add_task(self.cache_repo.delete_menus_tree_cache)

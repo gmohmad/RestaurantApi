@@ -5,6 +5,8 @@ info:
   description: API for managing menus in a restaurant.
 
 tags:
+  - name: Menus Tree
+    description: Here you can get all menus with all submenus and dishes related to them in a tree-like structure.
   - name: Menus
     description: Operations related to menus
   - name: Submenus
@@ -12,8 +14,36 @@ tags:
   - name: Dishes
     description: Operations relates to dishes
 
-
 paths:
+  /api/v1/menus-tree:
+    get:
+      tags:
+       - Menus Tree
+      description: Retrieve a list of all menus with all submenus and dishes related to them.
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              example:
+                - id: 6f79016a-ff96-4ba9-9023-3c07d1e8d9e0
+                  title: Breakfast
+                  description: Morning menu
+                  submenus_count: 1
+                  dishes_count: 5
+                  submenus:
+                    id: 6f79016a-ff96-4ba9-9023-3c07d1e8d9e0
+                    title: Breakfast Submenu
+                    description: Morning submenu
+                    menu_id: 6f79016a-ff96-4ba9-9023-3c07d1e8d9e0
+                    dishes_count: 3
+                    dishes:
+                      id: 6f79016a-ff96-4ba9-9023-3c07d1e8d9e0
+                      title: Breakfast Dish
+                      description: Morning Dihs
+                      price: 34.34
+                      submenu_id: 6f79016a-ff96-4ba9-9023-3c07d1e8d9e0
+
   /api/v1/menus:
     get:
       tags:

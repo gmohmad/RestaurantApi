@@ -23,6 +23,21 @@ class CacheRepo:
         for key in await self.redis.keys(pattern + '*'):
             await self.redis.delete(key)
 
+    async def get_menus_tree_cache(self) -> list[Menu] | None:
+        """Получение кэша эндпойнта get_menus_tree"""
+        cached_menus_tree = await self.redis.get('menus_tree')
+        if cached_menus_tree:
+            return pickle.loads(cached_menus_tree)
+        return None
+
+    async def set_menus_tree_cache(self, menus_tree: list[Menu]) -> None:
+        """Добавление кэша для эндпойнта get_menus_tree"""
+        await self.redis.set('menus_tree', pickle.dumps(menus_tree), 3600)
+
+    async def delete_menus_tree_cache(self) -> None:
+        """Удаление кэша эндпойнта get_menus_tree"""
+        await self.redis.delete('menus_tree')
+
     async def get_all_menus_cache(self) -> list[Menu] | None:
         """Получение кэша эндпойнта get_all_menus"""
         cached_menus = await self.redis.get(MENU_KEY)
@@ -71,7 +86,9 @@ class CacheRepo:
         """Добавление кэша для эндпойнта get_all_submenus"""
         await self.redis.set(SUBMENU_KEY.format(menu_id), pickle.dumps(submenus), 3600)
 
-    async def get_submenu_cache(self, menu_id: UUID, submenu_id: UUID) -> SubMenu | None:
+    async def get_submenu_cache(
+        self, menu_id: UUID, submenu_id: UUID
+    ) -> SubMenu | None:
         """Получение кэша эндпойнта get_specific_submenu"""
         cached_submenu = await self.redis.get(
             SUBMENU_KEY.format(menu_id) + str(submenu_id)
@@ -100,7 +117,9 @@ class CacheRepo:
         """Удаление кэша для всех эндпойнтов связанных с определенным подменю"""
         await self.delete_cache_by_mask(SUBMENU_KEY.format(menu_id) + str(submenu_id))
 
-    async def get_all_dishes_cache(self, menu_id: UUID, submenu_id: UUID) -> list[Dish] | None:
+    async def get_all_dishes_cache(
+        self, menu_id: UUID, submenu_id: UUID
+    ) -> list[Dish] | None:
         """Получение кэша эндпойнта get_all_dishes"""
         cached_dishes = await self.redis.get(DISH_KEY.format(menu_id, submenu_id))
         if cached_dishes:

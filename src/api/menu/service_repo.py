@@ -17,6 +17,16 @@ class MenuServiceRepo:
         self.crud_repo = crud_repo
         self.cache_repo = cache_repo
 
+    async def get_menus_tree(self, bg_tasks: BackgroundTasks) -> list[Menu]:
+        """Получение всех меню с подменю и блюдами связанными с ними"""
+        cache = await self.cache_repo.get_menus_tree_cache()
+        if cache:
+            return cache
+        menus_tree = await self.crud_repo.get_menus_tree()
+        bg_tasks.add_task(self.cache_repo.set_menus_tree_cache, menus_tree)
+
+        return menus_tree
+
     async def get_all_menus(self, bg_tasks: BackgroundTasks) -> list[Menu]:
         """Получение всех меню"""
         cache = await self.cache_repo.get_all_menus_cache()
@@ -41,6 +51,7 @@ class MenuServiceRepo:
         """Добавление нового меню"""
         menu = await self.crud_repo.create_menu(data)
         bg_tasks.add_task(self.cache_repo.delete_all_menu_cache)
+        bg_tasks.add_task(self.cache_repo.delete_menus_tree_cache)
 
         return menu
 
@@ -50,6 +61,7 @@ class MenuServiceRepo:
         """Изменение меню"""
         menu = await self.crud_repo.update_menu(menu_id, data)
         bg_tasks.add_task(self.cache_repo.delete_menu_cache, menu_id)
+        bg_tasks.add_task(self.cache_repo.delete_menus_tree_cache)
 
         return menu
 
@@ -58,3 +70,4 @@ class MenuServiceRepo:
         await self.crud_repo.delete_menu(menu_id)
         bg_tasks.add_task(self.cache_repo.delete_menu_cache, menu_id)
         bg_tasks.add_task(self.cache_repo.delete_menu_tree_cache, menu_id)
+        bg_tasks.add_task(self.cache_repo.delete_menus_tree_cache)

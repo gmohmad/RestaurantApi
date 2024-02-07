@@ -55,6 +55,7 @@ class DishServiceRepo:
         """Добавление нового блюда"""
         dish = await self.crud_repo.create_dish(submenu_id, data)
         bg_tasks.add_task(self.cache_repo.delete_all_dishes_cache, menu_id, submenu_id)
+        bg_tasks.add_task(self.cache_repo.delete_menus_tree_cache)
 
         return dish
 
@@ -71,6 +72,7 @@ class DishServiceRepo:
         bg_tasks.add_task(
             self.cache_repo.delete_dish_cache, menu_id, submenu_id, dish_id
         )
+        bg_tasks.add_task(self.cache_repo.delete_menus_tree_cache)
 
         return dish
 
@@ -83,3 +85,4 @@ class DishServiceRepo:
         bg_tasks.add_task(
             self.cache_repo.delete_dish_cache, menu_id, submenu_id, dish_id
         )
+        bg_tasks.add_task(self.cache_repo.delete_menus_tree_cache)

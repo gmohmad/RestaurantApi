@@ -3,9 +3,10 @@ from uuid import UUID
 from fastapi import Depends
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import selectinload
 
 from src.database import get_async_session
-from src.model_definitions.models import Menu
+from src.model_definitions.models import Menu, SubMenu
 from src.schemas.menu_schemas import MenuInput, MenuUpdate
 from src.utils import check_if_exists
 
@@ -15,6 +16,14 @@ class MenuCRUDRepo:
 
     def __init__(self, session: AsyncSession = Depends(get_async_session)) -> None:
         self.session = session
+
+    async def get_menus_tree(self) -> list[Menu]:
+        """Получение всех меню с подменю и блюдами связанными с ними"""
+        query = select(Menu).options(
+            selectinload(Menu.submenus).options(selectinload(SubMenu.dishes))
+        )
+        result = await self.session.execute(query)
+        return result.scalars().fetchall()
 
     async def get_all_menus(self) -> list[Menu]:
         """Получение всех меню"""

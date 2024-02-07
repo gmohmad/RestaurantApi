@@ -3,10 +3,16 @@ from uuid import UUID
 from fastapi import APIRouter, BackgroundTasks, Depends, status
 
 from src.api.menu.service_repo import MenuServiceRepo
-from src.config import MENU_URL, MENUS_URL
+from src.config import MENU_URL, MENUS_TREE, MENUS_URL
 from src.schemas.menu_schemas import MenuInput, MenuOutput, MenuUpdate
 
 menu_router = APIRouter(prefix='/api/v1')
+
+
+@menu_router.get(MENUS_TREE, name='get_menus_tree')
+async def get_menus_tree(bg_tasks: BackgroundTasks, repo: MenuServiceRepo = Depends()):
+    """Получение всех меню с подменю и блюдами связанными с ними"""
+    return await repo.get_menus_tree(bg_tasks)
 
 
 @menu_router.get(MENUS_URL, response_model=list[MenuOutput], name='get_menus')
