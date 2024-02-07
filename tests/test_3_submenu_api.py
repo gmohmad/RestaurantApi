@@ -215,3 +215,11 @@ async def test_delete_submenu_fail(ac: AsyncClient, ids_storage: dict[str, str])
         )
     )
     assert response.status_code == 404
+
+
+async def test_delete_menu(ac: AsyncClient, ids_storage: dict[str, str]):
+    """DELETE - тест удаления определенного меню"""
+    response = await ac.delete(
+        reverse('delete_menu', target_menu_id=ids_storage['menu_id'])
+    )
+    assert response.status_code == 200
