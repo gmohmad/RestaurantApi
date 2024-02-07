@@ -3,7 +3,7 @@ from uuid import UUID
 from fastapi import Depends
 
 from src.api.dish.crud_repo import DishCRUDRepo
-from src.cache_repo import CacheRepo
+from src.caching.cache_repo import CacheRepo
 from src.model_definitions.models import Dish
 from src.schemas.dish_schemas import DishInput
 

@@ -423,6 +423,21 @@ paths:
         - Dishes
       summary: Get All Dishes
       description: Retrieve a list of all dishes.
+      parameters:
+        - name: target_menu_id
+          in: path
+          description: UUID of the target menu, should be a valid uuid4
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: target_submenu_id
+          in: path
+          description: UUID of the target submenu, should be a valid uuid4
+          required: true
+          schema:
+            type: string
+            format: uuid
       responses:
         '200':
           description: Successful response
@@ -458,6 +473,21 @@ paths:
         - Dishes
       summary: Create Dish
       description: Create a new dish.
+      parameters:
+        - name: target_menu_id
+          in: path
+          description: UUID of the target menu, should be a valid uuid4
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: target_submenu_id
+          in: path
+          description: UUID of the target submenu, should be a valid uuid4
+          required: true
+          schema:
+            type: string
+            format: uuid
       requestBody:
         required: true
         content:

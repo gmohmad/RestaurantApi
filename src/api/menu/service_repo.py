@@ -3,7 +3,7 @@ from uuid import UUID
 from fastapi import Depends
 
 from src.api.menu.crud_repo import MenuCRUDRepo
-from src.cache_repo import CacheRepo
+from src.caching.cache_repo import CacheRepo
 from src.model_definitions.models import Menu
 from src.schemas.menu_schemas import MenuInput
 
