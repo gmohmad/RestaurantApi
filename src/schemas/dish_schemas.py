@@ -8,6 +8,7 @@ class DishInput(BaseModel):
     title: str
     description: str
     price: float
+    discount: int | None = None
 
 
 class DishOutput(BaseModel):
@@ -16,11 +17,13 @@ class DishOutput(BaseModel):
     title: str
     description: str
     price: float
+    discount: int
     submenu_id: UUID
 
     @field_serializer('price')
     def serialize_price(self, price: float) -> str:
-        """Конвертирует цену в строку"""
+        """Конвертирует цену со скидкой в строку"""
+        price = self.price - (self.price * (self.discount / 100))
         return str(price)
 
 
@@ -29,3 +32,4 @@ class DishUpdate(BaseModel):
     title: str | None = None
     description: str | None = None
     price: float | None = None
+    discount: int | None = None

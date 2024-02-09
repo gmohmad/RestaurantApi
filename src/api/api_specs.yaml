@@ -18,10 +18,10 @@ paths:
   /api/v1/menus-tree:
     get:
       tags:
-       - Menus Tree
+        - Menus Tree
       description: Retrieve a list of all menus with all submenus and dishes related to them.
       responses:
-        '200':
+        "200":
           description: Successful response
           content:
             application/json:
@@ -51,7 +51,7 @@ paths:
       summary: Get All Menus
       description: Retrieve a list of all menus.
       responses:
-        '200':
+        "200":
           description: Successful response
           content:
             application/json:
@@ -76,9 +76,9 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/MenuInput'
+              $ref: "#/components/schemas/MenuInput"
       responses:
-        '201':
+        "201":
           description: Created
           content:
             application/json:
@@ -88,7 +88,7 @@ paths:
                 description: New Menu Description
                 submenus_count: 1
                 dishes_count: 5
-        '422':
+        "422":
           description: Bad Request, invalid data
           content:
             application/json:
@@ -111,7 +111,7 @@ paths:
             type: string
             format: uuid
       responses:
-        '200':
+        "200":
           description: Successful response
           content:
             application/json:
@@ -121,14 +121,14 @@ paths:
                 description: Morning menu
                 submenus_count: 1
                 dishes_count: 5
-        '422':
+        "422":
           description: Bad Request, invalid id
           content:
             application/json:
               example:
                 error: Unprocessable Entity
                 details: Invalid input
-        '404':
+        "404":
           description: Bad Request, menu with this id does not exist
           content:
             application/json:
@@ -154,9 +154,9 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/MenuUpdate'
+              $ref: "#/components/schemas/MenuUpdate"
       responses:
-        '200':
+        "200":
           description: Successful response
           content:
             application/json:
@@ -166,21 +166,20 @@ paths:
                 description: Updated Morning menu
                 submenus_count: 1
                 dishes_count: 5
-        '422':
+        "422":
           description: Bad Request, invalid id or data
           content:
             application/json:
               example:
                 error: Unprocessable Entity or Validation Error
                 details: Invalid input
-        '404':
+        "404":
           description: Bad Request, menu with this id does not exist
           content:
             application/json:
               example:
                 error: Doesn't Exist
                 details: menu not found
-
 
     delete:
       tags:
@@ -196,26 +195,25 @@ paths:
             type: string
             format: uuid
       responses:
-        '200':
+        "200":
           description: Successful Response, menu deleted
           content:
             application/json:
               example: "null"
-        '422':
+        "422":
           description: Bad Request, invalid id
           content:
             application/json:
               example:
                 error: Unprocessable Entity
                 details: Invalid input
-        '404':
+        "404":
           description: Bad Request, menu with this id does not exist
           content:
             application/json:
               example:
                 error: Doesn't Exist
                 details: menu not found
-
 
   /api/v1/menus/{target_menu_id}/submenus:
     get:
@@ -232,7 +230,7 @@ paths:
             type: string
             format: uuid
       responses:
-        '200':
+        "200":
           description: Successful response
           content:
             application/json:
@@ -247,14 +245,14 @@ paths:
                   description: Afternoon submenu
                   menu_id: 6f79016a-ff96-4ba9-9023-3c07d1e8d9e0
                   dishes_count: 4
-        '422':
+        "422":
           description: Bad Request, invalid menu id
           content:
             application/json:
               example:
                 error: Unprocessable Entity
                 details: Invalid input
-        '404':
+        "404":
           description: Bad Request, menu with this id does not exist
           content:
             application/json:
@@ -279,9 +277,9 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/SubMenuInput'
+              $ref: "#/components/schemas/SubMenuInput"
       responses:
-        '201':
+        "201":
           description: Created
           content:
             application/json:
@@ -291,21 +289,20 @@ paths:
                 description: New Submenu Description
                 menu_id: 6f79016a-ff96-4ba9-9023-3c07d1e8d9e0
                 dishes_count: 2
-        '422':
+        "422":
           description: Bad Request, invalid id or data
           content:
             application/json:
               example:
                 error: Unprocessable Entity or Validation Error
                 details: Invalid input
-        '404':
+        "404":
           description: Bad Request, menu with this id does not exist
           content:
             application/json:
               example:
                 error: Doesn't Exist
                 details: menu not found
-
 
   /api/v1/menus/{target_menu_id}/submenus/{target_submenu_id}:
     get:
@@ -329,7 +326,7 @@ paths:
             type: string
             format: uuid
       responses:
-        '200':
+        "200":
           description: Successful response
           content:
             application/json:
@@ -339,14 +336,14 @@ paths:
                 description: Morning submenu
                 menu_id: 6f79016a-ff96-4ba9-9023-3c07d1e8d9e0
                 dishes_count: 3
-        '422':
+        "422":
           description: Bad Request, invalid id
           content:
             application/json:
               example:
                 error: Unprocessable Entity
                 details: Invalid input
-        '404':
+        "404":
           description: Bad Request, submenu with this id does not exist
           content:
             application/json:
@@ -379,9 +376,9 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/SubMenuUpdate'
+              $ref: "#/components/schemas/SubMenuUpdate"
       responses:
-        '200':
+        "200":
           description: Successful response
           content:
             application/json:
@@ -391,14 +388,14 @@ paths:
                 description: Updated Morning submenu
                 menu_id: 6f79016a-ff96-4ba9-9023-3c07d1e8d9e0
                 dishes_count: 3
-        '422':
+        "422":
           description: Bad Request, invalid id or data
           content:
             application/json:
               example:
                 error: Unprocessable Entity or Validation Error
                 details: Invalid input
-        '404':
+        "404":
           description: Bad Request, submenu with this id does not exist
           content:
             application/json:
@@ -427,19 +424,19 @@ paths:
             type: string
             format: uuid
       responses:
-        '200':
+        "200":
           description: Successful Response, submenu deleted
           content:
             application/json:
               example: "null"
-        '422':
+        "422":
           description: Bad Request, invalid id
           content:
             application/json:
               example:
                 error: Unprocessable Entity
                 details: Invalid input
-        '404':
+        "404":
           description: Bad Request, submenu with this id does not exist
           content:
             application/json:
@@ -469,7 +466,7 @@ paths:
             type: string
             format: uuid
       responses:
-        '200':
+        "200":
           description: Successful response
           content:
             application/json:
@@ -484,14 +481,14 @@ paths:
                   description: Afternoon submenu
                   price: 3.23
                   submenu_id: 6f79016a-ff96-4ba9-9023-3c07d1e8d9e0
-        '422':
+        "422":
           description: Bad Request, invalid id
           content:
             application/json:
               example:
                 error: Unprocessable Entity
                 details: Invalid input
-        '404':
+        "404":
           description: Bad Request, menu/submenu with this id does not exist
           content:
             application/json:
@@ -523,9 +520,9 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/DishInput'
+              $ref: "#/components/schemas/DishInput"
       responses:
-        '201':
+        "201":
           description: Created
           content:
             application/json:
@@ -535,14 +532,14 @@ paths:
                   description: Morning Dihs
                   price: 34.34
                   submenu_id: 6f79016a-ff96-4ba9-9023-3c07d1e8d9e0
-        '422':
+        "422":
           description: Bad Request, invalid id or data
           content:
             application/json:
               example:
                 error: Unprocessable Entity or Validation Error
                 details: Invalid input
-        '404':
+        "404":
           description: Bad Request, menu/submenu with this id does not exist
           content:
             application/json:
@@ -579,7 +576,7 @@ paths:
             type: string
             format: uuid
       responses:
-        '200':
+        "200":
           description: Successful response
           content:
             application/json:
@@ -589,14 +586,14 @@ paths:
                   description: Morning Dihs
                   price: 34.34
                   submenu_id: 6f79016a-ff96-4ba9-9023-3c07d1e8d9e0
-        '422':
+        "422":
           description: Bad Request, invalid menu_id/submenu_id
           content:
             application/json:
               example:
                 error: Unprocessable Entity
                 details: Invalid input
-        '404':
+        "404":
           description: Bad Request, menu/submenu/dish with this id does not exist
           content:
             application/json:
@@ -636,9 +633,9 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/DishUpdate'
+              $ref: "#/components/schemas/DishUpdate"
       responses:
-        '200':
+        "200":
           description: Successful response
           content:
             application/json:
@@ -648,14 +645,14 @@ paths:
                   description: Morning Dihs
                   price: 34.34
                   submenu_id: 6f79016a-ff96-4ba9-9023-3c07d1e8d9e0
-        '422':
+        "422":
           description: Bad Request, invalid menu_id/submenu_id
           content:
             application/json:
               example:
                 error: Unprocessable Entity
                 details: Invalid input
-        '404':
+        "404":
           description: Bad Request, menu/submenu/dish with this id does not exist
           content:
             application/json:
@@ -691,19 +688,19 @@ paths:
             type: string
             format: uuid
       responses:
-        '200':
+        "200":
           description: Successful Response, dish deleted
           content:
             application/json:
               example: "null"
-        '422':
+        "422":
           description: Bad Request, invalid menu_id/submenu_id
           content:
             application/json:
               example:
                 error: Unprocessable Entity
                 details: Invalid input
-        '404':
+        "404":
           description: Bad Request, menu/submenu/dish with this id does not exist
           content:
             application/json:
@@ -761,9 +758,6 @@ components:
         description:
           type: string
           example: Updated Morning menu
-      required:
-        - title
-        - description
 
     SubMenuInput:
       type: object
@@ -814,9 +808,6 @@ components:
         description:
           type: string
           example: Updated Morning submenu
-      required:
-        - title
-        - description
 
     DishInput:
       description: Input schema for creating a dish
@@ -831,10 +822,14 @@ components:
         price:
           type: number
           example: 15.99
+        discount:
+          type: number
+          example: 20
       required:
         - title
         - description
         - price
+        - discount
 
     DishOutput:
       description: Output schema for a dish
@@ -877,7 +872,6 @@ components:
         price:
           type: number
           example: 18.99
-      required:
-        - title
-        - description
-        - price
+        discount:
+          type: number
+          example: 20

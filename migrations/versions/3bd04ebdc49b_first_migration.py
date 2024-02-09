@@ -1,8 +1,8 @@
-"""First migration
+"""First Migration
 
-Revision ID: a999183941f0
+Revision ID: 3bd04ebdc49b
 Revises:
-Create Date: 2024-02-03 16:50:33.412064
+Create Date: 2024-02-08 12:29:38.272576
 
 """
 from typing import Sequence
@@ -42,6 +42,7 @@ def upgrade() -> None:
                     sa.Column('title', sa.String(), nullable=False),
                     sa.Column('description', sa.Text(), nullable=False),
                     sa.Column('price', sa.Numeric(precision=8, scale=2), nullable=False),
+                    sa.Column('discount', sa.Integer(), nullable=True),
                     sa.Column('submenu_id', sa.UUID(), nullable=True),
                     sa.ForeignKeyConstraint(['submenu_id'], ['submenus.id'], ),
                     sa.PrimaryKeyConstraint('id')
