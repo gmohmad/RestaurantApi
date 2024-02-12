@@ -24,6 +24,8 @@ class SubMenuCRUDRepo:
 
     async def create_submenu(self, menu_id: UUID, data: SubMenuInput) -> SubMenu:
         """Добавление нового подменю"""
+        if not data.id:
+            del data.id
         submenu = SubMenu(menu_id=menu_id, **data.model_dump())
 
         self.session.add(submenu)

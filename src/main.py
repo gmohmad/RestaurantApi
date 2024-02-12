@@ -7,6 +7,7 @@ from src.api.submenu.submenu_router import submenu_router
 
 app = FastAPI(title='Y_lab_FastAPI')
 
+
 app.include_router(menu_router)
 app.include_router(submenu_router)
 app.include_router(dish_router)

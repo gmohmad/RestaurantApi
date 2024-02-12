@@ -5,6 +5,18 @@
 ```
 git clone https://github.com/gmohmad/ylab_fastapi.git
 ```
+<details>
+    <summary><h2>Настройка для синхронизации с google таблицей</h2></summary>
+    <h3>1. Создайте проект в google drive console и подключите google sheets api</h3>
+        <details>
+            <summary><h4>Инструкция</h4></summary>
+            <h4>Таймстемп - 1:51-5:41</h4>
+            <h4>Ссылка - https://www.youtube.com/watch?v=zCEJurLGFRk</h4>
+        </details>
+            <h3>2. Загруженный файл с данными переименуйте в creds.json и поместите в дерикторию src/tasks/google_api_config</h3>
+            <h3>3. В той же дериктории создайте файл .env и заполните его по примеру .env.example (в SPREADSHEET_ID запишите id вашей google таблицы)</h3>
+</details>
+<br>
 
 ## 2. Создайте файл .env в дериктории проекта и заполните его по примеру файла .env.example
 

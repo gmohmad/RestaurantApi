@@ -40,7 +40,7 @@ repos:
     hooks:
     -   id: flake8
         exclude: "__init__.py"
-        args: ["--ignore=E501,F821", "--max-line-length=120"]
+        args: ["--ignore=E501,F821,W503", "--max-line-length=120"]
 
 # Проверка статических типов с помощью mypy
 -   repo: https://github.com/pre-commit/mirrors-mypy

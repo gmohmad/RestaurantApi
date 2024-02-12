@@ -24,6 +24,8 @@ class DishCRUDRepo:
 
     async def create_dish(self, submenu_id: UUID, data: DishInput) -> Dish:
         """Добавление нового блюда"""
+        if not data.id:
+            del data.id
         dish = Dish(submenu_id=submenu_id, **data.model_dump())
 
         self.session.add(dish)

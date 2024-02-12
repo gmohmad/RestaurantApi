@@ -5,6 +5,7 @@ from pydantic import BaseModel
 
 class MenuInput(BaseModel):
     """Модель для валидации входных данных для создания меню"""
+    id: UUID | None = None
     title: str
     description: str
 

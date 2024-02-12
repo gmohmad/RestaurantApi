@@ -25,6 +25,14 @@ async def prepare_database() -> None:
         await conn.run_sync(metadata.create_all)
 
 
+@pytest.fixture(scope='function')
+async def restore_database() -> None:
+    """Фикстура для очистки тестовой базы данных"""
+    async with engine_test.begin() as conn:
+        await conn.run_sync(metadata.drop_all)
+        await conn.run_sync(metadata.create_all)
+
+
 @pytest.fixture(scope='session')
 async def ac() -> AsyncClient:
     """Фикстура, предоставляющая асинхронный HTTP-клиент (AsyncClient) для тестирования"""

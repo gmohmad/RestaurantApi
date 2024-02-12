@@ -5,6 +5,7 @@ from pydantic import BaseModel, field_serializer
 
 class DishInput(BaseModel):
     """Модель для валидации входных данных для создания блюда"""
+    id: UUID | None = None
     title: str
     description: str
     price: float

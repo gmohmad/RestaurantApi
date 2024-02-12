@@ -5,7 +5,7 @@ from httpx import AsyncClient
 from tests.reverse import reverse
 
 
-async def test_menus_tree_empty(ac: AsyncClient):
+async def test_menus_tree_empty(ac: AsyncClient, restore_database):
     """GET - тест эндпойнта get_menus_tree, когда нет ни одного меню"""
     response = await ac.get(reverse('get_menus_tree'))
     assert response.status_code == 200
@@ -75,7 +75,12 @@ async def test_create_dish(ac: AsyncClient, ids_storage: dict[str, str]):
         'target_menu_id': ids_storage['menu_id'],
         'target_submenu_id': ids_storage['submenu_id'],
     }
-    dish_data = {'title': 'd title', 'description': 'd description', 'price': 99.99}
+    dish_data = {
+        'title': 'd title',
+        'description': 'd description',
+        'price': 100,
+        'discount': 20,
+    }
     response = await ac.post(reverse('create_dish', **path_params), json=dish_data)
 
     assert response.status_code == 201
@@ -96,4 +101,5 @@ async def test_menus_tree_with_one_dish(ac: AsyncClient):
     assert dish['id'] and UUID(dish['id'], version=4)
     assert dish['title'] == 'd title'
     assert dish['description'] == 'd description'
-    assert dish['price'] == 99.99
+    assert dish['price'] == str(float(80))
+    assert dish['discount'] == 20
