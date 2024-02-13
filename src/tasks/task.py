@@ -23,7 +23,7 @@ celery = Celery(
 def setup_periodic_tasks(sender: Celery, **kwargs) -> None:
     """Добавление периодичной задачи для Celery worker"""
     sender.add_periodic_task(
-        30.0, sync_database, name='synchronize sheet and db every 15s'
+        15.0, sync_database, name='synchronize sheet and db every 15s'
     )
 
 
