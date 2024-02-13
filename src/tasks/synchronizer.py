@@ -1,3 +1,4 @@
+import pickle
 from uuid import UUID
 
 from src.api.dish.crud_repo import DishCRUDRepo
@@ -34,6 +35,7 @@ class SynchronizerRepo:
         """Добавление нескольких блюд"""
         for dish in dishes:
             await self.dish_repo.create_dish(submenu_id, DishInput(**dish))
+            await self.redis.set(dish['id'], pickle.dumps(dish['discount']))
 
     async def sync_menu(self, menu: dict) -> None:
         """Синхронизвция определенного меню"""
@@ -70,7 +72,6 @@ class SynchronizerRepo:
             db_dish.title != dish['title']
             or db_dish.description != dish['description']
             or db_dish.price != dish['price']
-            or db_dish.discount != dish['discount']
         ):
             await self.dish_repo.update_dish(
                 menu_id, submenu_id, dish['id'], DishUpdate(**dish_copy)
@@ -87,6 +88,7 @@ class SynchronizerRepo:
             else:
                 await self.sync_dish(menu_id, submenu_id, dish)
                 dish_ids.remove(dish['id'])
+            await self.redis.set(dish['id'], pickle.dumps(dish['discount']))
         for id in dish_ids:
             await self.dish_repo.delete_dish(menu_id, submenu_id, UUID(id))
 
@@ -102,8 +104,7 @@ class SynchronizerRepo:
                 await self.create_dishes(submenu['id'], submenu['dishes'])
             else:
                 await self.sync_submenu(menu_id, submenu)
-                if submenu['dishes']:
-                    await self.sync_dishes(menu_id, submenu['id'], submenu['dishes'])
+                await self.sync_dishes(menu_id, submenu['id'], submenu['dishes'])
                 submenu_ids.remove(submenu['id'])
         for id in submenu_ids:
             await self.submenu_repo.delete_submenu(menu_id, UUID(id))
@@ -119,8 +120,7 @@ class SynchronizerRepo:
                     await self.create_dishes(submenu['id'], submenu['dishes'])
             else:
                 await self.sync_menu(menu)
-                if menu['submenus']:
-                    await self.sync_submenus(menu['id'], menu['submenus'])
+                await self.sync_submenus(menu['id'], menu['submenus'])
                 menu_ids.remove(menu['id'])
 
         for id in menu_ids:
@@ -129,5 +129,5 @@ class SynchronizerRepo:
     async def run_synchronization(self) -> None:
         """Запуск синхронизации"""
         await self.initialize_repos()
-        await self.sync_menus()
         await self.redis.flushall()
+        await self.sync_menus()

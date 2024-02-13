@@ -18,6 +18,12 @@ class CacheRepo:
     def __init__(self, redis: Redis = Depends(get_redis)) -> None:
         self.redis = redis
 
+    async def get_discount_cache(self, dish_id: UUID) -> int | None:
+        discount = await self.redis.get(str(dish_id))
+        if discount is not None:
+            return pickle.loads(discount)
+        return None
+
     async def delete_cache_by_mask(self, pattern: str) -> None:
         """Удаление кэша по маске"""
         for key in await self.redis.keys(pattern + '*'):

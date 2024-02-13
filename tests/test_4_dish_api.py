@@ -51,12 +51,7 @@ async def test_create_dish(ac: AsyncClient, ids_storage: dict[str, str]):
         'target_menu_id': ids_storage['menu_id'],
         'target_submenu_id': ids_storage['submenu_id'],
     }
-    dish_data = {
-        'title': 'd title',
-        'description': 'd description',
-        'price': 100,
-        'discount': 20,
-    }
+    dish_data = {'title': 'd title', 'description': 'd description', 'price': 100.0}
     response = await ac.post(reverse('create_dish', **path_params), json=dish_data)
     dish = response.json()
 
@@ -65,11 +60,7 @@ async def test_create_dish(ac: AsyncClient, ids_storage: dict[str, str]):
     assert dish['id'] and UUID(dish['id'], version=4)
     assert dish['title'] == dish_data['title']
     assert dish['description'] == dish_data['description']
-
-    assert dish['discount'] == 20
-    price = float(str(dish_data['price']))
-    discounted_price = float(price - (price * (dish['discount'] / 100)))
-    assert dish['price'] == str(discounted_price)
+    assert dish['price'] == str(dish_data['price'])
 
     async with SessionMaker() as session:
         db_dish = await get_dish_by_id(
@@ -79,7 +70,6 @@ async def test_create_dish(ac: AsyncClient, ids_storage: dict[str, str]):
         assert db_dish.id == UUID(dish['id'])
         assert db_dish.title == dish_data['title']
         assert db_dish.description == dish_data['description']
-        assert db_dish.discount == dish_data['discount']
         assert db_dish.price == round(Decimal(str(dish_data['price'])), 2)
     ids_storage['dish_id'] = dish['id']
 
@@ -103,7 +93,6 @@ async def test_get_all_dishes(ac: AsyncClient, ids_storage: dict[str, str]):
         assert isinstance(dish['title'], str)
         assert isinstance(dish['description'], str)
         assert isinstance(dish['price'], str)
-        assert isinstance(dish['discount'], int)
 
 
 async def test_get_specific_dish(ac: AsyncClient, ids_storage: dict[str, str]):
@@ -122,8 +111,7 @@ async def test_get_specific_dish(ac: AsyncClient, ids_storage: dict[str, str]):
     assert dish['id'] == ids_storage['dish_id']
     assert dish['title'] == 'd title'
     assert dish['description'] == 'd description'
-    assert dish['discount'] == 20
-    assert dish['price'] == str(float(80))
+    assert dish['price'] == '100.0'
 
 
 async def test_get_specific_dish_fail(ac: AsyncClient, ids_storage: dict[str, str]):
@@ -170,7 +158,7 @@ async def test_update_dish(ac: AsyncClient, ids_storage: dict[str, str]):
         'target_submenu_id': ids_storage['submenu_id'],
         'target_dish_id': ids_storage['dish_id'],
     }
-    new_dish_data = {'price': 80}
+    new_dish_data = {'price': 80.0}
     response = await ac.patch(reverse('update_dish', **path_params), json=new_dish_data)
     assert response.status_code == 200
     dish = response.json()
@@ -178,8 +166,7 @@ async def test_update_dish(ac: AsyncClient, ids_storage: dict[str, str]):
     assert dish['id'] == ids_storage['dish_id']
     assert dish['title'] == 'd title'
     assert dish['description'] == 'd description'
-    assert dish['discount'] == 20
-    assert dish['price'] == str(float(64))
+    assert dish['price'] == str(new_dish_data['price'])
 
     async with SessionMaker() as session:
         db_dish = await get_dish_by_id(
@@ -190,7 +177,6 @@ async def test_update_dish(ac: AsyncClient, ids_storage: dict[str, str]):
         assert db_dish.id == UUID(dish['id'])
         assert db_dish.title == 'd title'
         assert db_dish.description == 'd description'
-        assert db_dish.discount == 20
         assert db_dish.price == round(Decimal(new_dish_data['price']), 2)
 
 

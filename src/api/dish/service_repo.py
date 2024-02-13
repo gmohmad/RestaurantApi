@@ -6,6 +6,7 @@ from src.api.dish.crud_repo import DishCRUDRepo
 from src.caching.cache_repo import CacheRepo
 from src.model_definitions.models import Dish
 from src.schemas.dish_schemas import DishInput
+from src.utils import update_dish_price
 
 
 class DishServiceRepo:
@@ -27,6 +28,11 @@ class DishServiceRepo:
         if cache:
             return cache
         dishes = await self.crud_repo.get_all_dishes(submenu_id)
+
+        for dish in dishes:
+            discount = await self.cache_repo.get_discount_cache(dish.id)
+            update_dish_price(dish, discount)
+
         bg_tasks.add_task(
             self.cache_repo.set_all_dishes_cache, menu_id, submenu_id, dishes
         )
@@ -41,6 +47,9 @@ class DishServiceRepo:
         if cache:
             return cache
         dish = await self.crud_repo.get_specific_dish(menu_id, submenu_id, dish_id)
+        discount = await self.cache_repo.get_discount_cache(dish.id)
+        update_dish_price(dish, discount)
+
         bg_tasks.add_task(self.cache_repo.set_dish_cache, menu_id, submenu_id, dish)
 
         return dish

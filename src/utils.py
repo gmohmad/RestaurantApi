@@ -64,3 +64,9 @@ def check_if_exists(obj: Base | None, obj_name: str) -> Base:
             detail=f'{obj_name} not found',
         )
     return obj
+
+
+def update_dish_price(dish: Dish, discount: int | None) -> None:
+    if discount:
+        price = float(dish.price)
+        dish.price = price - (price * (discount / 100))

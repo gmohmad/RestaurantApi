@@ -1,17 +1,7 @@
 import uuid
 from typing import Any
 
-from sqlalchemy import (
-    Column,
-    ForeignKey,
-    Integer,
-    MetaData,
-    Numeric,
-    String,
-    Text,
-    func,
-    select,
-)
+from sqlalchemy import Column, ForeignKey, MetaData, Numeric, String, Text, func, select
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import column_property, declarative_base, relationship
 
@@ -34,7 +24,6 @@ class Dish(Base):
     title = Column(String, nullable=False, index=True)
     description = Column(Text, nullable=False)
     price = Column(Numeric(precision=8, scale=2), nullable=False)
-    discount = Column(Integer, default=0)
 
     submenu_id = Column(UUID(as_uuid=True), ForeignKey('submenus.id'))
     submenu = relationship('SubMenu', back_populates='dishes')

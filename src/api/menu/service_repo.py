@@ -6,6 +6,7 @@ from src.api.menu.crud_repo import MenuCRUDRepo
 from src.caching.cache_repo import CacheRepo
 from src.model_definitions.models import Menu
 from src.schemas.menu_schemas import MenuInput
+from src.utils import update_dish_price
 
 
 class MenuServiceRepo:
@@ -23,6 +24,13 @@ class MenuServiceRepo:
         if cache:
             return cache
         menus_tree = await self.crud_repo.get_menus_tree()
+
+        for menu in menus_tree:
+            for submenu in menu.submenus:
+                for dish in submenu.dishes:
+                    discount = await self.cache_repo.get_discount_cache(dish.id)
+                    update_dish_price(dish, discount)
+
         bg_tasks.add_task(self.cache_repo.set_menus_tree_cache, menus_tree)
 
         return menus_tree

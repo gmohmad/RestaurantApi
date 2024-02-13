@@ -25,7 +25,7 @@ class Parser:
                     'dishes': [],
                 }
                 menu['submenus'].append(submenu)
-            else:
+            elif item[2]:
                 dish = {
                     'id': item[2],
                     'title': item[3],

@@ -79,7 +79,6 @@ async def test_create_dish(ac: AsyncClient, ids_storage: dict[str, str]):
         'title': 'd title',
         'description': 'd description',
         'price': 100,
-        'discount': 20,
     }
     response = await ac.post(reverse('create_dish', **path_params), json=dish_data)
 
@@ -101,5 +100,4 @@ async def test_menus_tree_with_one_dish(ac: AsyncClient):
     assert dish['id'] and UUID(dish['id'], version=4)
     assert dish['title'] == 'd title'
     assert dish['description'] == 'd description'
-    assert dish['price'] == str(float(80))
-    assert dish['discount'] == 20
+    assert dish['price'] == str(float(100))

@@ -822,14 +822,10 @@ components:
         price:
           type: number
           example: 15.99
-        discount:
-          type: number
-          example: 20
       required:
         - title
         - description
         - price
-        - discount
 
     DishOutput:
       description: Output schema for a dish
@@ -872,6 +868,3 @@ components:
         price:
           type: number
           example: 18.99
-        discount:
-          type: number
-          example: 20
