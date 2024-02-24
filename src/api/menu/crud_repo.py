@@ -33,8 +33,6 @@ class MenuCRUDRepo:
 
     async def create_menu(self, data: MenuInput) -> Menu:
         """Добавление нового меню"""
-        if not data.id:
-            del data.id
         menu = Menu(**data.model_dump())
 
         self.session.add(menu)
