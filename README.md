@@ -1,48 +1,46 @@
-**Put a star if ur cloning ))
-# Запуск проекта
+**Put a star if you're cloning :))
 
-## 1. Склонируйте репозиторий
+# Project Setup
 
+## 1. Clone the repository
 ```
 git clone https://github.com/gmohmad/ylab_fastapi.git
 ```
+
 <details>
-    <summary><h1>$${\color{red}Настройка \space \color{red}для \space \color{red}синхронизации \space \color{red}с \space \color{red}google \space \color{red}таблицей}$$</h1></summary>
-    <h3>1. Создайте проект в google drive console и подключите google sheets api</h3>
+    <summary>Setup for syncing with Google Sheets</summary>
+    <h3>1. Create a project in Google Drive Console and connect Google Sheets API</h3>
         <details>
-            <summary><h2>$${\color{red}Инструкция}$$</h2></summary>
-            <h4>Таймстемп - 1:51-5:41</h4>
-            <h4>Ссылка - https://www.youtube.com/watch?v=zCEJurLGFRk</h4>
+            <summary>Instructions</summary>
+            <h4>Timestamp - 1:51-5:41</h4>
+            <h4>Link - https://www.youtube.com/watch?v=zCEJurLGFRk</h4>
         </details>
-            <h3>2. Загруженный файл с данными переименуйте в creds.json и поместите в дерикторию src/tasks/google_api_config</h3>
-            <h3>3. В той же дериктории создайте файл .env и заполните его по примеру .env.example (в SPREADSHEET_ID запишите id вашей google таблицы)</h3>
+            <h3>2. Rename the downloaded data file to creds.json and place it in the src/tasks/google_api_config directory</h3>
+            <h3>3. In the same directory, create a .env file and fill it according to the .env.example file (put the id of your Google Sheet in SPREADSHEET_ID)</h3>
 </details>
 <br>
 
-## 2. Создайте файл .env в дериктории проекта и заполните его по примеру файла .env.example
+## 2. Create a .env file in the project directory and fill it according to the .env.example file
 
-## 3. Запуск приложения
-
+## 3. Running the application
 ```
 docker-compose up -d --build
 ```
 
-## 4. Запуск тестов
+## 4. Running the tests
 
-### для стабильного запуска остановите ранее запущенное приложение
-
+### Stop the previously running application for stable execution
 ```
 docker-compose down -v
 ```
 
-### и запустите контейнер для прогона тестов
-
+### And start the container for running the tests
 ```
 docker-compose -f docker-compose.tests.yaml up --build
 ```
+shell
+Copy code
 
-#### для запуска с фильтрацией логов запустите
+#### For running with log filtering, run
 
-```
 docker-compose -f docker-compose.tests.yaml up -d --build ; docker logs -f ylab_fastapi-web-1
-```
