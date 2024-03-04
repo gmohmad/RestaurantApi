@@ -1,5 +1,3 @@
-**Put a star if you're cloning :))
-
 # Project Setup
 
 ## 1. Clone the repository
