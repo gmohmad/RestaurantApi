@@ -36,9 +36,8 @@ docker-compose down -v
 ```
 docker-compose -f docker-compose.tests.yaml up --build
 ```
-shell
-Copy code
 
 #### For running with log filtering, run
-
+```
 docker-compose -f docker-compose.tests.yaml up -d --build ; docker logs -f ylab_fastapi-web-1
+```
